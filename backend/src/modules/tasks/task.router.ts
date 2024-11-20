@@ -14,7 +14,7 @@ router
   .route('/')
   .get(
     cache({
-      key: (req) => `GET:project:${req.params.projectId}:tasks`,
+      keyGenerator: (req) => `GET:project:${req.params.projectId}:tasks`,
       ttl: 300
     }),
     taskController.findAllByProject
@@ -29,7 +29,7 @@ router
   .route('/:taskId')
   .get(
     cache({
-      key: (req) => `GET:task:${req.params.taskId}`,
+      keyGenerator: (req) => `GET:task:${req.params.taskId}`,
       ttl: 300
     }),
     taskController.findOne

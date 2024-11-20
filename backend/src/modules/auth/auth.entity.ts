@@ -7,8 +7,9 @@ export interface IUser extends BaseEntity, Document {
   password: string;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'USER';
+  role: 'ADMIN' | 'MEMBER' | 'VIEWER';
   isVerified: boolean;
+  avatar: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -27,6 +28,10 @@ const userSchema = new Schema<IUser>(
       minlength: [6, 'Password must be at least 6 characters'],
       select: false, // Don't include password by default in queries
     },
+    avatar: {
+      type: String,
+      default: ""
+    },
     firstName: {
       type: String,
       required: true,
@@ -39,8 +44,8 @@ const userSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ['ADMIN', 'USER'],
-      default: 'USER',
+      enum: ['ADMIN', 'MEMBER', 'VIEWER'],
+      default: 'VIEWER',
     },
     isVerified: {
       type: Boolean,
@@ -49,13 +54,23 @@ const userSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   try {
     if (!this.isModified('password')) {
       return next();
@@ -69,7 +84,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 

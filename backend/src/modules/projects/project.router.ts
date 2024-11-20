@@ -24,7 +24,7 @@ router
   .route('/:projectId')
   .get(
     cache({
-      key: (req) => `GET:project:${req.params.projectId}`,
+      keyGenerator: (req) => `GET:project:${req.params.projectId}`,
       ttl: 300
     }),
     projectController.findOne

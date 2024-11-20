@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import { User, IUser } from './auth.entity';
 import { BaseService } from '../../shared/utils/base.service';
-import { 
+import {
   UnauthorizedException,
   ConflictException,
-  InternalServerException 
+  InternalServerException
 } from '../../shared/exceptions';
 
 type UserResponse = Omit<IUser, 'password'>;
@@ -24,9 +24,9 @@ export class AuthService extends BaseService<IUser> {
     const token = this.generateToken(user);
 
     // Convert to plain object and exclude password
-    const { password, ...userResponse } = user.toObject();
+    const { password, ...userResponse } = user.toObject() as IUser;
 
-    return { user: userResponse, token };
+    return { user: userResponse as UserResponse, token };
   }
 
   async login(email: string, password: string): Promise<{ user: UserResponse; token: string }> {
@@ -39,13 +39,13 @@ export class AuthService extends BaseService<IUser> {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-  
+
     const token = this.generateToken(user);
-    
+
     // Convert to plain object and exclude password
     const { password: _, ...userResponse } = user.toObject();
 
-    return { user: userResponse, token };
+    return { user: userResponse as UserResponse, token };
   }
 
   private generateToken(user: IUser): string {
@@ -64,7 +64,7 @@ export class AuthService extends BaseService<IUser> {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
       const user = await User.findById(decoded.id).select('-password');
-      
+
       if (!user) {
         throw new UnauthorizedException('Invalid token');
       }

@@ -42,6 +42,9 @@ const projectSchema = new Schema<IProject>(
         return ret;
       },
     },
+    toObject: {
+      virtuals: true,
+    }
   }
 );
 

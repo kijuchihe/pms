@@ -3,8 +3,12 @@ import { redisClient } from '../../config/redis';
 
 interface CacheOptions {
   ttl?: number;
-  key?: (req: Request) => string;
+  keyGenerator?: (req: Request) => string;
 }
+
+type ResponseWithJson = Response & {
+  json: (data: any) => Response;
+};
 
 const defaultKeyGenerator = (req: Request): string => {
   return `${req.method}:${req.originalUrl}`;
@@ -12,28 +16,31 @@ const defaultKeyGenerator = (req: Request): string => {
 
 export const cache = (options: CacheOptions = {}) => {
   const ttl = options.ttl || 300; // Default 5 minutes
-  const keyGenerator = options.key || defaultKeyGenerator;
+  const keyGenerator = options.keyGenerator || defaultKeyGenerator;
 
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: ResponseWithJson, next: NextFunction): Promise<void> => {
     if (req.method !== 'GET') {
-      return next();
+      // Only cache GET requests
+      next();
+      return;
     }
 
     const key = keyGenerator(req);
 
     try {
       const cachedData = await redisClient.get(key);
-      
+
       if (cachedData) {
         const data = JSON.parse(cachedData);
-        return res.json(data);
+        res.json(data);
+        return;
       }
 
       // Store original res.json method
       const originalJson = res.json.bind(res);
 
       // Override res.json method to cache the response
-      res.json = ((data: any): Response => {
+      res.json = ((data: any) => {
         // Restore original method
         res.json = originalJson;
 
@@ -42,7 +49,7 @@ export const cache = (options: CacheOptions = {}) => {
 
         // Send the response
         return originalJson(data);
-      }) as any;
+      }) as Response['json'];
 
       next();
     } catch (error) {
@@ -53,18 +60,18 @@ export const cache = (options: CacheOptions = {}) => {
 };
 
 export const clearCache = (pattern: string) => {
-  return async (_req: Request, _res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const client = redisClient.getClient();
       const keys = await client.keys(pattern);
-      
+
       if (keys.length > 0) {
-        await client.del(...keys);
+        await Promise.all(keys.map(key => client.del(key)));
       }
-      
+
       next();
     } catch (error) {
-      console.error('Clear cache middleware error:', error);
+      console.error('Clear cache error:', error);
       next();
     }
   };

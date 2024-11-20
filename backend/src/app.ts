@@ -12,6 +12,7 @@ import { errorHandler } from './shared/middleware/error.middleware';
 import authRouter from './modules/auth/auth.router';
 import projectRouter from './modules/projects/project.router';
 import taskRouter from './modules/tasks/task.router';
+import teamRouter from './modules/teams/team.router';
 
 // Load environment variables
 config();
@@ -34,6 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRouter);
 app.use('/api/projects', projectRouter);
 app.use('/api/projects/:projectId/tasks', taskRouter);
+app.use('/api/teams', teamRouter);
 
 // Error handling - must be after routes
 app.use(errorHandler);
