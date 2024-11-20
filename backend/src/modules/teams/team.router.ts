@@ -7,6 +7,7 @@ import {
   createTeamSchema, 
   updateTeamSchema, 
   addMemberSchema,
+  updateMemberRoleSchema,
   addProjectSchema 
 } from './team.validation';
 
@@ -54,8 +55,12 @@ router
     clearCache('GET:*/teams*'),
     teamController.addMember
   )
+  .put(
+    validateRequest(updateMemberRoleSchema),
+    clearCache('GET:*/teams*'),
+    teamController.updateMemberRole
+  )
   .delete(
-    validateRequest(addMemberSchema),
     clearCache('GET:*/teams*'),
     teamController.removeMember
   );
@@ -68,7 +73,6 @@ router
     teamController.addProject
   )
   .delete(
-    validateRequest(addProjectSchema),
     clearCache('GET:*/teams*'),
     teamController.removeProject
   );

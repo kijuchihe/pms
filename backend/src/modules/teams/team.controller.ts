@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { TeamService } from './team.service';
 import { catchAsync } from '../../shared/utils/catch-async';
+import { TeamRole } from './team-member.entity';
 
 export class TeamController {
   private teamService: TeamService;
@@ -42,8 +43,17 @@ export class TeamController {
 
   addMember = catchAsync(async (req: Request, res: Response) => {
     const { teamId, userId } = req.params;
+    const { role = TeamRole.MEMBER } = req.body;
     const currentUserId = req.user.id;
-    const team = await this.teamService.addMember(teamId, userId, currentUserId);
+    const team = await this.teamService.addMember(teamId, userId, currentUserId, role);
+    res.json(team);
+  });
+
+  updateMemberRole = catchAsync(async (req: Request, res: Response) => {
+    const { teamId, userId } = req.params;
+    const { role } = req.body;
+    const currentUserId = req.user.id;
+    const team = await this.teamService.updateMemberRole(teamId, userId, role, currentUserId);
     res.json(team);
   });
 

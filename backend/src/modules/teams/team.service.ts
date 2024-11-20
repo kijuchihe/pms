@@ -1,4 +1,5 @@
 import { Team, ITeam } from './team.entity';
+import { TeamMember, TeamRole } from './team-member.entity';
 import { BaseService } from '../../shared/utils/base.service';
 import { 
   NotFoundException, 
@@ -13,8 +14,14 @@ export class TeamService extends BaseService<ITeam> {
 
   async findByIdWithDetails(id: string): Promise<ITeam> {
     const team = await Team.findById(id)
+      .populate({
+        path: 'members',
+        populate: {
+          path: 'userId',
+          select: 'name email'
+        }
+      })
       .populate('leader', 'name email')
-      .populate('members', 'name email')
       .populate('projects', 'name description status');
 
     if (!team) {
@@ -32,13 +39,18 @@ export class TeamService extends BaseService<ITeam> {
 
     // Set the creator as the leader
     teamData.leaderId = userId;
-    // Add the leader to members if not already included
-    teamData.members = teamData.members || [];
-    if (!teamData.members.includes(userId)) {
-      teamData.members.push(userId);
-    }
 
-    return await Team.create(teamData);
+    const team = await Team.create(teamData);
+
+    // Create TeamMember entry for the leader
+    await TeamMember.create({
+      teamId: team.id,
+      userId,
+      role: TeamRole.LEADER,
+      invitedBy: userId
+    });
+
+    return team;
   }
 
   async update(id: string, updateData: Partial<ITeam>, userId: string): Promise<ITeam> {
@@ -47,9 +59,9 @@ export class TeamService extends BaseService<ITeam> {
       throw new NotFoundException('Team not found');
     }
 
-    // Only team leader can update team details
-    if (team.leaderId.toString() !== userId) {
-      throw new ForbiddenException('Only team leader can update team details');
+    const teamMember = await TeamMember.findOne({ teamId: id, userId });
+    if (!teamMember || ![TeamRole.LEADER, TeamRole.ADMIN].includes(teamMember.role)) {
+      throw new ForbiddenException('Only team leader or admin can update team details');
     }
 
     if (updateData.name && updateData.name !== team.name) {
@@ -66,27 +78,69 @@ export class TeamService extends BaseService<ITeam> {
     ).populate('leader', 'name email');
   }
 
-  async addMember(teamId: string, userId: string, currentUserId: string): Promise<ITeam> {
+  async addMember(teamId: string, userId: string, currentUserId: string, role: TeamRole = TeamRole.MEMBER): Promise<ITeam> {
     const team = await this.findById(teamId);
     if (!team) {
       throw new NotFoundException('Team not found');
     }
 
-    // Only team leader can add members
-    if (team.leaderId.toString() !== currentUserId) {
-      throw new ForbiddenException('Only team leader can add members');
+    // Check if the current user has permission to add members
+    const currentMember = await TeamMember.findOne({ teamId, userId: currentUserId });
+    if (!currentMember || ![TeamRole.LEADER, TeamRole.ADMIN].includes(currentMember.role)) {
+      throw new ForbiddenException('Only team leader or admin can add members');
     }
 
     // Check if user is already a member
-    if (team.members.includes(userId)) {
+    const existingMember = await TeamMember.findOne({ teamId, userId });
+    if (existingMember) {
       throw new ConflictException('User is already a team member');
     }
 
-    return await Team.findByIdAndUpdate(
+    // Don't allow adding a member with LEADER role
+    if (role === TeamRole.LEADER) {
+      throw new ForbiddenException('Cannot add member with LEADER role');
+    }
+
+    // Create new team member
+    await TeamMember.create({
       teamId,
-      { $push: { members: userId } },
-      { new: true }
-    ).populate('members', 'name email');
+      userId,
+      role,
+      invitedBy: currentUserId
+    });
+
+    return await this.findByIdWithDetails(teamId);
+  }
+
+  async updateMemberRole(teamId: string, userId: string, newRole: TeamRole, currentUserId: string): Promise<ITeam> {
+    const team = await this.findById(teamId);
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+
+    // Check if the current user has permission
+    const currentMember = await TeamMember.findOne({ teamId, userId: currentUserId });
+    if (!currentMember || currentMember.role !== TeamRole.LEADER) {
+      throw new ForbiddenException('Only team leader can update member roles');
+    }
+
+    // Don't allow changing to LEADER role
+    if (newRole === TeamRole.LEADER) {
+      throw new ForbiddenException('Cannot change member role to LEADER');
+    }
+
+    const memberToUpdate = await TeamMember.findOne({ teamId, userId });
+    if (!memberToUpdate) {
+      throw new NotFoundException('Team member not found');
+    }
+
+    // Update the role
+    await TeamMember.updateOne(
+      { teamId, userId },
+      { $set: { role: newRole } }
+    );
+
+    return await this.findByIdWithDetails(teamId);
   }
 
   async removeMember(teamId: string, userId: string, currentUserId: string): Promise<ITeam> {
@@ -95,21 +149,25 @@ export class TeamService extends BaseService<ITeam> {
       throw new NotFoundException('Team not found');
     }
 
-    // Only team leader can remove members
-    if (team.leaderId.toString() !== currentUserId) {
-      throw new ForbiddenException('Only team leader can remove members');
+    // Check if the current user has permission
+    const currentMember = await TeamMember.findOne({ teamId, userId: currentUserId });
+    if (!currentMember || ![TeamRole.LEADER, TeamRole.ADMIN].includes(currentMember.role)) {
+      throw new ForbiddenException('Only team leader or admin can remove members');
+    }
+
+    const memberToRemove = await TeamMember.findOne({ teamId, userId });
+    if (!memberToRemove) {
+      throw new NotFoundException('Team member not found');
     }
 
     // Cannot remove the team leader
-    if (userId === team.leaderId.toString()) {
+    if (memberToRemove.role === TeamRole.LEADER) {
       throw new ForbiddenException('Cannot remove team leader from the team');
     }
 
-    return await Team.findByIdAndUpdate(
-      teamId,
-      { $pull: { members: userId } },
-      { new: true }
-    ).populate('members', 'name email');
+    await TeamMember.deleteOne({ teamId, userId });
+
+    return await this.findByIdWithDetails(teamId);
   }
 
   async addProject(teamId: string, projectId: string, userId: string): Promise<ITeam> {
@@ -118,9 +176,10 @@ export class TeamService extends BaseService<ITeam> {
       throw new NotFoundException('Team not found');
     }
 
-    // Only team leader can add projects
-    if (team.leaderId.toString() !== userId) {
-      throw new ForbiddenException('Only team leader can add projects');
+    // Check if the user has permission
+    const member = await TeamMember.findOne({ teamId, userId });
+    if (!member || ![TeamRole.LEADER, TeamRole.ADMIN].includes(member.role)) {
+      throw new ForbiddenException('Only team leader or admin can add projects');
     }
 
     // Check if project is already added
@@ -141,9 +200,10 @@ export class TeamService extends BaseService<ITeam> {
       throw new NotFoundException('Team not found');
     }
 
-    // Only team leader can remove projects
-    if (team.leaderId.toString() !== userId) {
-      throw new ForbiddenException('Only team leader can remove projects');
+    // Check if the user has permission
+    const member = await TeamMember.findOne({ teamId, userId });
+    if (!member || ![TeamRole.LEADER, TeamRole.ADMIN].includes(member.role)) {
+      throw new ForbiddenException('Only team leader or admin can remove projects');
     }
 
     return await Team.findByIdAndUpdate(
