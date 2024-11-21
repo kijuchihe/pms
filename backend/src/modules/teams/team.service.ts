@@ -1,11 +1,12 @@
 import { Team, ITeam } from './team.entity';
 import { TeamMember, TeamRole } from './team-member.entity';
 import { BaseService } from '../../shared/utils/base.service';
-import { 
-  NotFoundException, 
+import {
+  NotFoundException,
   ConflictException,
-  ForbiddenException 
+  ForbiddenException
 } from '../../shared/exceptions';
+import mongoose from 'mongoose';
 
 export class TeamService extends BaseService<ITeam> {
   constructor() {
@@ -38,7 +39,7 @@ export class TeamService extends BaseService<ITeam> {
     }
 
     // Set the creator as the leader
-    teamData.leaderId = userId;
+    teamData.leaderId = userId as unknown as mongoose.Types.ObjectId;
 
     const team = await Team.create(teamData);
 
@@ -75,7 +76,7 @@ export class TeamService extends BaseService<ITeam> {
       id,
       { $set: updateData },
       { new: true }
-    ).populate('leader', 'name email');
+    ).populate('leader', 'name email') as ITeam;
   }
 
   async addMember(teamId: string, userId: string, currentUserId: string, role: TeamRole = TeamRole.MEMBER): Promise<ITeam> {
@@ -183,7 +184,7 @@ export class TeamService extends BaseService<ITeam> {
     }
 
     // Check if project is already added
-    if (team.projects.includes(projectId)) {
+    if (team.projects.includes(projectId as unknown as mongoose.Types.ObjectId)) {
       throw new ConflictException('Project is already added to the team');
     }
 
@@ -191,7 +192,7 @@ export class TeamService extends BaseService<ITeam> {
       teamId,
       { $push: { projects: projectId } },
       { new: true }
-    ).populate('projects', 'name description status');
+    ).populate('projects', 'name description status') as ITeam;
   }
 
   async removeProject(teamId: string, projectId: string, userId: string): Promise<ITeam> {
@@ -210,6 +211,6 @@ export class TeamService extends BaseService<ITeam> {
       teamId,
       { $pull: { projects: projectId } },
       { new: true }
-    ).populate('projects', 'name description status');
+    ).populate('projects', 'name description status') as ITeam;
   }
 }

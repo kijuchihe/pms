@@ -2,9 +2,9 @@ import { Model, Document, FilterQuery, UpdateQuery } from 'mongoose';
 import { BaseEntity } from './base.entity';
 
 export abstract class BaseService<T extends BaseEntity> {
-  constructor(protected readonly model: Model<T>) {}
+  constructor(protected readonly model: Model<T>) { }
 
-  async create(data: Partial<T>): Promise<T> {
+  async create(data: Partial<T>, ...rest: any[]): Promise<T> {
     const entity = new this.model(data);
     return entity.save();
   }
@@ -21,7 +21,7 @@ export abstract class BaseService<T extends BaseEntity> {
     return this.model.find(filter);
   }
 
-  async update(id: string, data: UpdateQuery<T>): Promise<T | null> {
+  async update(id: string, data: UpdateQuery<T>, ...rest: any[]): Promise<T | null> {
     return this.model.findByIdAndUpdate(id, data, { new: true });
   }
 

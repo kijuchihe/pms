@@ -2,7 +2,7 @@ import axios from 'axios';
 import { PaginationParams } from '../types';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -19,11 +19,21 @@ api.interceptors.request.use((config) => {
 
 // Auth APIs
 export const authApi = {
-  login: (email: string, password: string) => 
-    api.post('/auth/login', { email, password }),
-  register: (name: string, email: string, password: string) => 
-    api.post('/auth/register', { name, email, password }),
+  login: async (email: string, password: string) => {
+    try {
+      const response = await api.post('/auth/login', { email, password })
+      console.log(response.data)
+      axios.defaults.headers['authorization'] = `Bearer ${response.data.data.token}`
+      return response.data
+    } catch (error) {
+
+    }
+  },
+  register: (registerData: { firstName: string, lastName: string, email: string, password: string }) =>
+    api.post('/auth/register', registerData),
   logout: () => {
+    axios.defaults.headers['authorization'] = ``
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=strict';
     localStorage.removeItem('token');
   },
 };
@@ -32,18 +42,18 @@ export const authApi = {
 export const projectsApi = {
   getAll: (params?: PaginationParams) => api.get('/projects'),
   getById: (id: string) => api.get(`/projects/${id}`),
-  create: (data: { name: string; description: string }) => 
+  create: (data: { name: string; description: string }) =>
     api.post('/projects', data),
-  update: (id: string, data: { name?: string; description?: string }) => 
+  update: (id: string, data: { name?: string; description?: string }) =>
     api.put(`/projects/${id}`, data),
   delete: (id: string) => api.delete(`/projects/${id}`),
 };
 
 // Tasks APIs
 export const tasksApi = {
-  create: (projectId: string, data: { 
-    title: string; 
-    description: string; 
+  create: (projectId: string, data: {
+    title: string;
+    description: string;
     assigneeId?: string;
     dueDate?: string;
     priority: 'low' | 'medium' | 'high';
@@ -56,6 +66,6 @@ export const tasksApi = {
     priority?: 'low' | 'medium' | 'high';
     status?: 'todo' | 'in-progress' | 'done';
   }) => api.put(`/projects/${projectId}/tasks/${taskId}`, data),
-  delete: (projectId: string, taskId: string) => 
+  delete: (projectId: string, taskId: string) =>
     api.delete(`/projects/${projectId}/tasks/${taskId}`),
 };

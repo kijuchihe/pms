@@ -15,7 +15,7 @@ export interface ITeamMember extends Document {
   invitedBy: mongoose.Types.ObjectId;
 }
 
-const teamMemberSchema = new Schema({
+const teamMemberSchema = new Schema<ITeamMember>({
   teamId: {
     type: Schema.Types.ObjectId,
     ref: 'Team',

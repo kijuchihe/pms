@@ -1,14 +1,15 @@
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lstName: string;
   email: string;
   avatar?: string;
-  role: UserRole;
+  role?: UserRole;
   createdAt: string;
   updatedAt: string;
 }
 
-export type UserRole = 'ADMIN' | 'MEMBER' | 'VIEWER';
+export type UserRole = 'ADMIN' | 'MEMBER' | 'VIEWER' | 'LEADER';
 
 export interface ApiResponse<T> {
   data: T | T[];
@@ -19,8 +20,11 @@ export interface ApiResponse<T> {
 
 // Common API Response Types
 export interface ItemApiResponse<T> extends ApiResponse<T> {
-  data: T ;
+  data: T;
+}
 
+export interface ListApiResponse<T> extends ApiResponse<T> {
+  data: T[]
 }
 
 export interface ApiError {
