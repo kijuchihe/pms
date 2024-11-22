@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 import { BaseService } from '../../shared/utils/base.service';
 import { Project, IProject } from './project.entity';
 import { NotFoundException, BadRequestException } from '../../shared/exceptions';
@@ -46,6 +46,13 @@ export class ProjectService extends BaseService<IProject> {
     };
   }
 
+  async findUserProjects(userId: string): Promise<IProject[]> {
+    return this.model
+      .find({ $or: [{ ownerId: userId }, { members: userId }] })
+      .populate('ownerId', 'name email')
+      .populate('members', 'name email');
+  }
+
   async addMember(projectId: string, userId: string): Promise<IProject> {
     const project = await this.findByIdWithDetails(projectId);
 
@@ -54,11 +61,11 @@ export class ProjectService extends BaseService<IProject> {
     }
 
     // Check if user is already a member
-    if (project.members.some(member => member.userId.toString() === userId)) {
+    if (project.members.some(member => member.toString() === userId)) {
       throw new BadRequestException('User is already a member of this project');
     }
 
-    project.members.push({ userId });
+    project.members.push(userId as unknown as mongoose.Schema.Types.ObjectId);
     return await project.save();
   }
 
@@ -70,7 +77,7 @@ export class ProjectService extends BaseService<IProject> {
     }
 
     project.members = project.members.filter(
-      member => member.userId.toString() !== userId
+      memberId => memberId.toString() !== userId
     );
 
     return await project.save();
@@ -82,7 +89,7 @@ export class ProjectService extends BaseService<IProject> {
 
     return (
       project.ownerId.toString() === userId ||
-      project.members.some(member => member.userId.toString() === userId)
+      project.members.some(memberId => memberId.toString() === userId)
     );
   }
 }

@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-base font-semibold leading-6 text-gray-900">Last 30 days</h3>
+        <h3 className="text-base font-semibold leading-6 text-light-100">Last 30 days</h3>
         <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
           {stats.map((item) => (
             <div
@@ -26,7 +26,7 @@ export default function Home() {
 
       <div>
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-gray-900">Recent Projects</h2>
+          <h2 className="text-sm font-medium text-light">Recent Projects</h2>
           <Link
             href="/projects"
             className="text-sm font-medium text-indigo-600 hover:text-indigo-500"

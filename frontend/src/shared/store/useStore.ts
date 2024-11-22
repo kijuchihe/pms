@@ -2,13 +2,26 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User, Project, Task } from '../types';
 
+interface ITeam {
+  name: string;
+  description: string;
+  leaderId: string;
+  projects: string[];
+  members: string[];
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
 interface AppState {
   user: User | null;
   projects: Project[];
   currentProject: Project | null;
+  teams: ITeam[]
   setUser: (user: User | null) => void;
   setProjects: (projects: Project[]) => void;
   setCurrentProject: (project: Project | null) => void;
+  setTeams: (teams: ITeam[]) => void;
   updateTask: (projectId: string, taskId: string, updates: Partial<Task>) => void;
 }
 
@@ -18,10 +31,12 @@ export const useStore = create<AppState>()(
       user: null,
       projects: [],
       currentProject: null,
+      teams: [],
 
       setUser: (user) => set({ user }),
       setProjects: (projects) => set({ projects }),
       setCurrentProject: (project) => set({ currentProject: project }),
+      setTeams: (teams) => set({ teams }),
 
       updateTask: (projectId, taskId, updates) =>
         set((state) => ({
@@ -43,6 +58,7 @@ export const useStore = create<AppState>()(
         // (optional) specify which parts of state to persist
         user: state.user,
         projects: state.projects,
+        teams: state.teams,
         // currentProject: state.currentProject,
       }),
     }

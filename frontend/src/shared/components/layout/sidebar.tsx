@@ -10,16 +10,17 @@ import {
   ChevronDownIcon,
 } from '@heroicons/react/24/outline';
 import { useStore } from '@/shared/store/useStore';
+import { authApi } from '@/shared/utils/api';
 
 export function Sidebar() {
   const user = useStore(state => state.user)
 
   return (
-    <div className="w-64 bg-gray-900 text-white flex flex-col">
+    <div className="w-64 bg-dark text-white flex flex-col fixed top-0 left-0 h-screen">
       {/* Account Dropdown */}
       <div className="p-4">
         <Menu as="div" className="relative z-50">
-          <MenuButton className="w-full flex items-center justify-between px-4 py-2 text-sm rounded-lg hover:bg-gray-800">
+          <MenuButton className="w-full flex items-center justify-between px-4 py-2 text-sm rounded-lg hover:bg-dark-100">
             <span>Current Account</span>
             <ChevronDownIcon className="h-5 w-5" />
           </MenuButton>
@@ -32,12 +33,12 @@ export function Sidebar() {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <MenuItems className="absolute left-0 mt-2 w-56 rounded-md bg-gray-800 shadow-lg">
+            <MenuItems className="absolute left-0 mt-2 w-56 rounded-md bg-dark-100 shadow-lg">
               <div className="py-1">
                 {/* Teams Section */}
                 <div className="px-4 py-2 text-xs text-gray-400">Your teams</div>
                 <MenuItem>
-                  {(active) => (
+                  {({ active }) => (
                     <a
                       href="#"
                       className={`${active ? 'bg-gray-700' : ''
@@ -73,7 +74,7 @@ export function Sidebar() {
           <input
             type="text"
             placeholder="Search..."
-            className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 bg-dark-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -82,10 +83,17 @@ export function Sidebar() {
       <nav className="flex-1 px-4 py-4 space-y-2">
         <Link
           href="/dashboard"
-          className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-gray-800"
+          className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-dark-100"
         >
           <HomeIcon className="h-5 w-5 mr-3" />
           Dashboard
+        </Link>
+        <Link
+          href="/teams"
+          className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-dark-100"
+        >
+          <HomeIcon className="h-5 w-5 mr-3" />
+          My Teams
         </Link>
 
         {/* Projects Section */}
@@ -97,13 +105,13 @@ export function Sidebar() {
             {/* Project list will be mapped here */}
             <Link
               href="/projects/1"
-              className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-gray-800"
+              className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-dark-100"
             >
               Project 1
             </Link>
             <Link
               href="/projects"
-              className="flex items-center px-4 py-2 text-sm text-gray-400 rounded-lg hover:bg-gray-800"
+              className="flex items-center px-4 py-2 text-sm text-gray-400 rounded-lg hover:bg-dark-100"
             >
               Show more...
             </Link>
@@ -112,17 +120,25 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-4 border-t border-dark-100">
         <Link
           href="/settings"
-          className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-gray-800"
+          className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-dark-100"
         >
           <Cog6ToothIcon className="h-5 w-5 mr-3" />
           Settings
         </Link>
         <Link
+          href="/auth/login"
+          className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-dark-100"
+          onClick={() => authApi.logout()}
+        >
+          <Cog6ToothIcon className="h-5 w-5 mr-3" />
+          Logout
+        </Link>
+        <Link
           href="/invite"
-          className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-gray-800"
+          className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-dark-100"
         >
           <UserGroupIcon className="h-5 w-5 mr-3" />
           Invite Members

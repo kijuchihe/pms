@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Layout from "@/shared/components/Layout";
+import Layout from "@/shared/components/layout";
 import Providers from "@/shared/providers";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -17,11 +17,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
           {children}
-
         </Providers>
       </body>
     </html>

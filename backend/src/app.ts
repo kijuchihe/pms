@@ -13,6 +13,7 @@ import authRouter from './modules/auth/auth.router';
 import projectRouter from './modules/projects/project.router';
 import taskRouter from './modules/tasks/task.router';
 import teamRouter from './modules/teams/team.router';
+import usersRouter from './modules/users/users.router';
 
 // Load environment variables
 config();
@@ -36,6 +37,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/projects', projectRouter);
 app.use('/api/projects/:projectId/tasks', taskRouter);
 app.use('/api/teams', teamRouter);
+app.use('/api/users', usersRouter);
 
 // Error handling - must be after routes
 app.use(errorHandler);

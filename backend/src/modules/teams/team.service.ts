@@ -13,6 +13,11 @@ export class TeamService extends BaseService<ITeam> {
     super(Team);
   }
 
+  async findAll(): Promise<ITeam[]> {
+    return Team.find()
+      .populate('leader', 'name email')
+      .populate('projects', 'name description status');
+  }
   async findByIdWithDetails(id: string): Promise<ITeam> {
     const team = await Team.findById(id)
       .populate({
@@ -212,5 +217,11 @@ export class TeamService extends BaseService<ITeam> {
       { $pull: { projects: projectId } },
       { new: true }
     ).populate('projects', 'name description status') as ITeam;
+  }
+
+  async getUserTeams(userId: string): Promise<ITeam[]> {
+    return await Team.find({ members: { $elemMatch: { userId } } })
+      .populate('leader', 'name email')
+      .populate('projects', 'name description status');
   }
 }

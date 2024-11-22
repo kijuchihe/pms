@@ -6,12 +6,23 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/shared/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/modules/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        dark: {
+          DEFAULT: '#121212',
+          100: "#212121",
+          200: "#d1d5db",
+          300: "#a3a8ae",
+        },
+        light: {
+          DEFAULT: '#fefefe',
+          100: '#efefef'
+        }
       },
     },
   },

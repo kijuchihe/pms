@@ -17,7 +17,7 @@ export default function ThemeProvider({
   }, [theme]);
 
   return (
-    <div className={`${theme} min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200`}>
+    <div className={`${theme} min-h-screen bg-light dark:bg-dark text-dark dark:text-light transition-colors duration-200`}>
       {children}
     </div>
   );
