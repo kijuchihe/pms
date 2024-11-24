@@ -18,13 +18,13 @@ const navigation = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useStore((state) => state.user)
-  const { theme, toggleTheme } = useThemeStore()
-  console.log(user)
+  // const { theme, toggleTheme } = useThemeStore()
+  // console.log(user)
 
   return (
     <>
       <Sidebar />
-      <main className="ml-64 px-4 bg-light dark:bg-dark h-full">
+      <main className="ml-64 px-4 h-full">
         {children}
       </main>
     </>

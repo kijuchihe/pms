@@ -220,7 +220,7 @@ export class TeamService extends BaseService<ITeam> {
   }
 
   async getUserTeams(userId: string): Promise<ITeam[]> {
-    return await Team.find({ members: { $elemMatch: { userId } } })
+    return await Team.find({ $or: [{ leaderId: userId }, { members: userId }] })
       .populate('leader', 'name email')
       .populate('projects', 'name description status');
   }
