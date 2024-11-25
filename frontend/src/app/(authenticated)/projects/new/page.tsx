@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
-import { useCreateProject } from '@/modules/projects/hooks/useProjects';
-import { ProjectPriority } from '@/modules/projects/types';
+import { useCreateProject } from '@/modules/projects/hooks/useCreateProject';
+import { ProjectPriority } from '@/shared/types';
 
 export default function NewProjectPage() {
   const router = useRouter();
-  const { mutate: createProject, isPending } = useCreateProject();
+  const { createProject, isLoading, error } = useCreateProject();
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -21,15 +22,14 @@ export default function NewProjectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    createProject(formData, {
-      onSuccess: (response) => {
-        router.push(`/projects/${response.data.id}`);
-      },
-      onError: (error) => {
-        console.error('Failed to create project:', error);
-      }
+    console.log(formData)
+
+    await createProject({
+      ...formData,
+      startDate: new Date(formData.startDate).toISOString().split('T')[0],
+      endDate: new Date(formData.endDate).toISOString().split('T')[0]
     });
+
   };
 
   const handleChange = (
@@ -42,7 +42,7 @@ export default function NewProjectPage() {
   return (
     <div className="container mx-auto p-6 max-w-2xl">
       <h1 className="text-2xl font-bold mb-6">Create New Project</h1>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium mb-1">
@@ -57,7 +57,7 @@ export default function NewProjectPage() {
             placeholder="Enter project name"
           />
         </div>
-        
+
         <div>
           <label htmlFor="description" className="block text-sm font-medium mb-1">
             Description
@@ -86,7 +86,7 @@ export default function NewProjectPage() {
               required
             />
           </div>
-          
+
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium mb-1">
               End Date
@@ -120,19 +120,16 @@ export default function NewProjectPage() {
             <option value="URGENT">Urgent</option>
           </select>
         </div>
-        
+
         <div className="flex justify-end space-x-4">
           <Button
             type="button"
             variant="outline"
             onClick={() => router.back()}
-            disabled={isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? 'Creating...' : 'Create Project'}
-          </Button>
+          <Button type="submit">Create Project</Button>
         </div>
       </form>
     </div>

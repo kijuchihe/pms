@@ -9,22 +9,30 @@ export interface ITask extends BaseEntity {
   dueDate?: Date;
   assigneeId?: Schema.Types.ObjectId;
   projectId: Schema.Types.ObjectId;
+  createdBy: Schema.Types.ObjectId;
+  updatedBy?: Schema.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const taskSchema = new Schema<ITask>(
   {
     title: { type: String, required: true },
-    description: { type: String },
+    description: { type: String, default: '' },
     status: {
       type: String,
       enum: ['TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE'],
       default: 'TODO',
+      required: true
     },
     priority: {
       type: String,
       enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'],
       default: 'MEDIUM',
+      required: true,
     },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
     dueDate: { type: Date },
     assigneeId: { type: Schema.Types.ObjectId, ref: 'User' },
     projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true },

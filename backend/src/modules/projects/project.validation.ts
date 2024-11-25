@@ -4,9 +4,10 @@ export const createProjectSchema = z.object({
   body: z.object({
     name: z.string().min(1, 'Project name is required'),
     description: z.string().min(1, 'Description is required'),
-    startDate: z.string().datetime(),
-    endDate: z.string().datetime(),
+    startDate: z.string().date(),
+    endDate: z.string().date(),
     priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
+    ownerId: z.string(),
     memberIds: z.array(z.string()).optional(),
   }),
 });

@@ -16,28 +16,32 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Task } from '@/shared/types';
+import { Task, TaskStatus } from '@/shared/types';
 import KanbanColumn from './KanbanColumn';
 import TaskCard from './TaskCard';
 import { useStore } from '@/shared/store/useStore';
 import { tasksApi } from '@/shared/utils/api';
-import { ProjectTask } from '../types';
+import { AxiosError } from 'axios';
+import { deleteCookie } from '@/shared/utils/delete-cookie';
+import { useRouter } from 'next/navigation';
+// import { ProjectTask, TaskPriority, TaskStatus } from '../types';
 
 const columns = [
-  { id: 'todo', title: 'To Do' },
-  { id: 'in-progress', title: 'In Progress' },
-  { id: 'done', title: 'Done' },
+  { id: 'TODO', title: 'To Do' },
+  { id: 'IN_PROGRESS', title: 'In Progress' },
+  { id: 'IN_REVIEW', title: 'In Review' },
+  { id: 'DONE', title: 'Done' },
 ];
 
 interface Props {
   projectId: string;
-  tasks: ProjectTask[];
+  tasks: Task[];
 }
 
 export default function KanbanBoard({ projectId, tasks: initialTasks }: Props) {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [activeId, setActiveId] = useState<string | null>(null);
-  
+  const router = useRouter();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -51,27 +55,35 @@ export default function KanbanBoard({ projectId, tasks: initialTasks }: Props) {
 
   const handleDragEnd = async (event: any) => {
     const { active, over } = event;
-    
+
     if (!over) return;
 
-    const activeTask = tasks.find((task) => task.id === active.id);
+    const activeTask = tasks?.find((task) => task.id === active.id);
     const newStatus = over.id.split('-')[0]; // column id format: "todo-column"
 
-    if (activeTask && activeTask.status !== newStatus) {
+    if (activeTask && activeTask.status !== newStatus && newStatus) {
       try {
-        await tasksApi.update(projectId, activeTask.id, {
-          status: newStatus as 'todo' | 'in-progress' | 'done',
+        await tasksApi.update(activeTask.id, {
+          status: newStatus as TaskStatus,
+          projectId
         });
 
         setTasks((tasks) =>
-          tasks.map((task) =>
+          tasks?.map((task) =>
             task.id === activeTask.id
               ? { ...task, status: newStatus }
               : task
           )
         );
       } catch (error) {
-        console.error('Failed to update task status:', error);
+        if (error instanceof AxiosError) {
+          if (error.status === 401) {
+            deleteCookie('token')
+            router.replace('/auth/login?from=/teams')
+          }
+          console.error('Failed to update task status:', error?.response?.data)
+        }
+
       }
     }
 
@@ -79,7 +91,7 @@ export default function KanbanBoard({ projectId, tasks: initialTasks }: Props) {
   };
 
   const getColumnTasks = (columnId: string) => {
-    return tasks.filter((task) => task.status === columnId);
+    return tasks?.filter((task) => task.status === columnId);
   };
 
   return (
@@ -103,10 +115,11 @@ export default function KanbanBoard({ projectId, tasks: initialTasks }: Props) {
       <DragOverlay>
         {activeId ? (
           <TaskCard
-            task={tasks.find((task) => task.id === activeId)!}
+            task={tasks?.find((task) => task.id === activeId)!}
             overlay
           />
         ) : null}
+
       </DragOverlay>
     </DndContext>
   );

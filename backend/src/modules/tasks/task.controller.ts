@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { TaskService } from './task.service';
 import { ProjectService } from '../projects/project.service';
 import { catchAsync } from '../../shared/utils/catch-async';
-import { 
-  BadRequestException, 
-  NotFoundException, 
-  ForbiddenException 
+import {
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException
 } from '../../shared/exceptions';
 
 export class TaskController {
@@ -18,7 +18,7 @@ export class TaskController {
   }
 
   create = catchAsync(async (req: Request, res: Response) => {
-    const { projectId } = req.params;
+    const { projectId } = req.body;
     const userId = req.user?.id;
 
     if (!projectId || !userId) {
@@ -37,13 +37,13 @@ export class TaskController {
 
     const task = await this.taskService.create({
       ...req.body,
-      projectId,
       createdBy: userId,
     });
 
     res.status(201).json({
       status: 'success',
       data: { task },
+      message: 'Task created successfully',
     });
   });
 
@@ -104,8 +104,11 @@ export class TaskController {
   });
 
   update = catchAsync(async (req: Request, res: Response) => {
-    const { projectId, taskId } = req.params;
+    const { taskId } = req.params;
+    const { projectId } = req.body
     const userId = req.user?.id;
+
+    console.log(projectId, taskId, userId)
 
     if (!projectId || !taskId || !userId) {
       throw new BadRequestException('Project ID, task ID, and user ID are required');

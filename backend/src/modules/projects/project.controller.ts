@@ -48,12 +48,13 @@ export class ProjectController {
   });
 
   findOne = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const project = await this.projectService.findByIdWithDetails(id);
+    const { projectId } = req.params;
+    const project = await this.projectService.findByIdWithDetails(projectId);
 
     if (!project) {
       throw new BadRequestException('Project not found');
     }
+    console.log('userId', req.user?.id)
 
     if (!this.hasAccess(project, req.user?.id)) {
       throw new ForbiddenException('You do not have access to this project');
@@ -150,11 +151,12 @@ export class ProjectController {
 
   private hasAccess(project: any, userId: string): boolean {
     if (!project || !userId) return false;
-    return project.ownerId === userId || project.members.some((member: any) => member.userId === userId);
+    console.log('project', project, 'userId', userId)
+    return (project.ownerId.toString() === userId.toString()) || project.memberIds.some((memberId: any) => memberId.toString() === userId);
   }
 
   private isOwner(project: any, userId: string): boolean {
     if (!project || !userId) return false;
-    return project.ownerId === userId;
+    return project.ownerId.toString() === userId;
   }
 }

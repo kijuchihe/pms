@@ -9,7 +9,7 @@ export interface IProject extends BaseEntity {
   startDate: Date;
   endDate: Date;
   ownerId: Schema.Types.ObjectId;
-  members: Schema.Types.ObjectId[];
+  memberIds: Schema.Types.ObjectId[];
 }
 
 const projectSchema = new Schema<IProject>(
@@ -29,7 +29,7 @@ const projectSchema = new Schema<IProject>(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    members: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    memberIds: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true,
@@ -53,6 +53,20 @@ projectSchema.virtual('tasks', {
   ref: 'Task',
   localField: '_id',
   foreignField: 'projectId',
+
+});
+
+projectSchema.virtual('owner', {
+  ref: 'User',
+  localField: 'ownerId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+projectSchema.virtual('members', {
+  ref: 'User',
+  localField: 'memberIds',
+  foreignField: '_id',
 });
 
 export const Project = model<IProject>('Project', projectSchema);

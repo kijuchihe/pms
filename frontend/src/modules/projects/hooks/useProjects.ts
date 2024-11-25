@@ -1,79 +1,37 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { projectsApi } from '@/shared/utils/api';
-import { 
-  Project, 
-  CreateProjectRequest, 
-  UpdateProjectRequest, 
-  ProjectResponse,
-  
-} from '../types';
+'use client';
+import { useEffect, useState } from "react";
+import { Project } from "../../../shared/types";
+import { projectsApi, userApi } from "../../../shared/utils/api";
+import { useStore } from "../../../shared/store/useStore";
+import { AxiosError } from "axios";
+import { deleteCookie } from "../../../shared/utils/delete-cookie";
+import { useRouter } from "next/navigation";
 
-import { PaginationParams, ItemApiResponse, PaginatedResponse } from '@/shared/types';
+export const useProjects = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const { user } = useStore(state => state);
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  useEffect(() => {
+    if (!user) return;
+    const fetchProjects = async () => {
+      try {
+        setIsLoading(true)
+        const response = await userApi.getUserProjects(user?.id as string);
+        setProjects(response.data.projects)
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          if (error.status === 401) {
+            deleteCookie('token')
+            router.replace('/auth/login?from=/teams')
+          }
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    };
+    fetchProjects();
+  }, [user]);
+  return { projects, isLoading }
+}
 
-export const useProjects = (params?: PaginationParams) => {
-  return useQuery({
-    queryKey: ['projects', params],
-    queryFn: async () => {
-      const { data } = await projectsApi.getAll(params);
-      return data as PaginatedResponse<Project>;
-    },
-  });
-};
-
-export const useProject = (id: string) => {
-  return useQuery({
-    queryKey: ['projects', id],
-    queryFn: async () => {
-      const { data } = await projectsApi.getById(id);
-      return data as ItemApiResponse<Project>;
-    },
-    enabled: !!id, // Only run query if id exists
-  });
-};
-
-export const useCreateProject = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (newProject: CreateProjectRequest) => {
-      const { data } = await projectsApi.create(newProject);
-      return data as ItemApiResponse<ProjectResponse>;
-    },
-    onSuccess: () => {
-      // Invalidate and refetch projects list
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    },
-  });
-};
-
-export const useUpdateProject = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ id, ...updates }: UpdateProjectRequest & { id: string }) => {
-      const { data } = await projectsApi.update(id, updates);
-      return data as ItemApiResponse<ProjectResponse>;
-    },
-    onSuccess: (data) => {
-      // Update both the list and the individual project
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects', data?.data.id] });
-    },
-  });
-};
-
-export const useDeleteProject = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      await projectsApi.delete(id);
-      return id;
-    },
-    onSuccess: (id) => {
-      // Remove from cache and refetch
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.removeQueries({ queryKey: ['projects', id] });
-    },
-  });
-};

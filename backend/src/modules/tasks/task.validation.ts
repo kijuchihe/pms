@@ -5,8 +5,9 @@ export const createTaskSchema = z.object({
     title: z.string().min(1, 'Task title is required'),
     description: z.string().optional(),
     priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
-    dueDate: z.string().datetime().optional(),
+    dueDate: z.string().date().optional(),
     assigneeId: z.string().optional(),
+    projectId: z.string().min(1, 'Project ID is required'),
   }),
 });
 

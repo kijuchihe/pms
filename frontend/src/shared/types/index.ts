@@ -62,20 +62,71 @@ export interface SearchFilter {
 export interface Project {
   id: string;
   name: string;
-  description?: string;
-  tasks: Task[];
+  description: string;
+  status: ProjectStatus;
+  priority: ProjectPriority;
+  startDate: string;
+  endDate: string;
   createdAt: string;
   updatedAt: string;
-  ownerId: string;
-  members?: User[];
+  owner: User;
+  members: User[];
+  tasks: Task[];
 }
+export type ProjectStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED';
+export type ProjectPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
+// Request/Response Types
+export interface CreateProjectRequest {
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  priority: ProjectPriority;
+  memberIds?: string[];
+}
+
+export interface UpdateProjectRequest {
+  name?: string;
+  description?: string;
+  status?: ProjectStatus;
+  priority?: ProjectPriority;
+  startDate?: string;
+  endDate?: string;
+  memberIds?: string[];
+}
+
+export interface CreateTaskRequest {
+  title: string;
+  description: string;
+  priority: TaskPriority;
+  dueDate: string;
+  assigneeId?: string;
+}
+
+export interface UpdateTaskRequest {
+  title?: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  dueDate?: string;
+  assigneeId?: string;
+}
+
+// Response Types
+export interface ProjectResponse extends Project { }
+export interface TaskResponse extends Task { }
+
+
 
 export interface Task {
   id: string;
   title: string;
   description?: string;
-  status: 'todo' | 'in-progress' | 'done';
-  priority: 'low' | 'medium' | 'high';
+  status: TaskStatus;
+  priority: TaskPriority;
   dueDate?: string;
   assigneeId?: string;
   projectId: string;

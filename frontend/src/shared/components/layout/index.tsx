@@ -1,13 +1,6 @@
 'use client';
 
-import { Fragment } from 'react'
-import { Disclosure, Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline'
 import { useStore } from '../../store/useStore'
-import { useThemeStore } from '../../store/useThemeStore'
-import Link from 'next/link'
-import { clsx } from 'clsx'
-import { authApi } from '../../utils/api';
 import { Sidebar } from './sidebar';
 
 const navigation = [
@@ -18,13 +11,11 @@ const navigation = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const user = useStore((state) => state.user)
-  // const { theme, toggleTheme } = useThemeStore()
-  // console.log(user)
 
   return (
     <>
       <Sidebar />
-      <main className="ml-64 px-4 h-full">
+      <main className="ml-64 p-4 h-full">
         {children}
       </main>
     </>

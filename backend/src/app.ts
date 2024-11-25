@@ -35,8 +35,9 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/projects', projectRouter);
-app.use('/api/projects/:projectId/tasks', taskRouter);
+// app.use('/api/projects/:projectId/tasks', taskRouter);
 app.use('/api/teams', teamRouter);
+app.use('/api/tasks', taskRouter);
 app.use('/api/users', usersRouter);
 
 // Error handling - must be after routes

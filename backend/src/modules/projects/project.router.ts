@@ -23,10 +23,10 @@ router
 router
   .route('/:projectId')
   .get(
-    cache({
-      keyGenerator: (req) => `GET:project:${req.params.projectId}`,
-      ttl: 300
-    }),
+    // cache({
+    //   keyGenerator: (req) => `GET:project:${req.params.projectId}`,
+    //   ttl: 300
+    // }),
     projectController.findOne
   )
   .put(

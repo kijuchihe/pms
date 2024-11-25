@@ -1,10 +1,10 @@
-import { FilterQuery } from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 import { Task, ITask } from './task.entity';
 import { BaseService } from '../../shared/utils/base.service';
-import { 
-  NotFoundException, 
+import {
+  NotFoundException,
   BadRequestException,
-  ForbiddenException 
+  ForbiddenException
 } from '../../shared/exceptions';
 import { ProjectService } from '../projects/project.service';
 
@@ -105,7 +105,7 @@ export class TaskService extends BaseService<ITask> {
 
   async updateStatus(taskId: string, status: string, userId: string): Promise<ITask> {
     const task = await this.findById(taskId);
-    
+
     if (!task) {
       throw new NotFoundException('Task not found');
     }
@@ -120,12 +120,12 @@ export class TaskService extends BaseService<ITask> {
       throw new BadRequestException(`Invalid status transition from ${task.status} to ${status}`);
     }
 
-    return await this.update(taskId, { status });
+    return await this.update(taskId, { status } as Partial<ITask>);
   }
 
   async assignTask(taskId: string, assigneeId: string, userId: string): Promise<ITask> {
     const task = await this.findById(taskId);
-    
+
     if (!task) {
       throw new NotFoundException('Task not found');
     }
@@ -135,7 +135,7 @@ export class TaskService extends BaseService<ITask> {
       throw new ForbiddenException('Only task creator or current assignee can reassign tasks');
     }
 
-    return await this.update(taskId, { assigneeId });
+    return await this.update(taskId, { assigneeId: assigneeId as unknown as mongoose.Schema.Types.ObjectId });
   }
 
   async delete(id: string): Promise<void> {

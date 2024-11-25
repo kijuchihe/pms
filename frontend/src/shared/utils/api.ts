@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ItemApiResponse, PaginationParams } from '../types';
+import { ItemApiResponse, PaginationParams, Task, TaskPriority, TaskStatus } from '../types';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
@@ -53,12 +53,12 @@ export const teamsApi = {
   delete: (id: string) => api.delete(`/teams/${id}`),
 };
 
-
+// type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 // Projects APIs
 export const projectsApi = {
   getAll: (params?: PaginationParams) => api.get('/projects'),
   getById: (id: string) => api.get(`/projects/${id}`),
-  create: (data: { name: string; description: string }) =>
+  create: (data: { name: string; description: string, startDate?: string, endDate: string, ownerId: string }) =>
     api.post('/projects', data),
   update: (id: string, data: { name?: string; description?: string }) =>
     api.put(`/projects/${id}`, data),
@@ -66,24 +66,20 @@ export const projectsApi = {
 };
 
 // Tasks APIs
+
+type CreateTask = {
+  title: string;
+  description: string;
+  assigneeId?: string;
+  dueDate?: string;
+  priority: TaskPriority;
+  projectId: string;
+}
 export const tasksApi = {
-  create: (projectId: string, data: {
-    title: string;
-    description: string;
-    assigneeId?: string;
-    dueDate?: string;
-    priority: 'low' | 'medium' | 'high';
-  }) => api.post(`/projects/${projectId}/tasks`, data),
-  update: (projectId: string, taskId: string, data: {
-    title?: string;
-    description?: string;
-    assigneeId?: string;
-    dueDate?: string;
-    priority?: 'low' | 'medium' | 'high';
-    status?: 'todo' | 'in-progress' | 'done';
-  }) => api.put(`/projects/${projectId}/tasks/${taskId}`, data),
-  delete: (projectId: string, taskId: string) =>
-    api.delete(`/projects/${projectId}/tasks/${taskId}`),
+  create: (data: CreateTask) => api.post(`/tasks`, data),
+  update: (taskId: string, data: Partial<CreateTask & { status?: TaskStatus }>) => api.put(`/tasks/${taskId}`, data),
+  delete: (taskId: string) =>
+    api.delete(`/tasks/${taskId}`),
 };
 
 
@@ -96,7 +92,6 @@ export const userApi = {
   getUserTeams: (userId: string) => api.get(`/users/${userId}/teams`),
   getUserProjects: async (userId: string) => {
     const response = await api.get(`/users/${userId}/projects`)
-    console.log('Data', response.data)
     return response.data
   },
   updateUser: (userId: string, data: Partial<any>) => api.put(`/users/${userId}`, data),

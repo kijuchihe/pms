@@ -69,7 +69,7 @@ export class AuthService extends BaseService<IUser> {
         throw new UnauthorizedException('Invalid token');
       }
 
-      return user.toObject();
+      return user.toJSON();
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }

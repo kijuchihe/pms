@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { IUser } from '../auth/auth.entity';
+import { populate } from 'dotenv';
 
 export interface ITeam extends Document {
   name: string;
@@ -28,7 +29,7 @@ const teamSchema = new Schema({
   },
   projects: [{
     type: Schema.Types.ObjectId,
-    ref: 'Project'
+    ref: 'Project',
   }]
 }, {
   timestamps: true,
@@ -40,6 +41,9 @@ const teamSchema = new Schema({
       delete ret.__v;
       return ret;
     }
+  },
+  toObject: {
+    virtuals: true
   }
 });
 
@@ -57,5 +61,7 @@ teamSchema.virtual('leader', {
   foreignField: '_id',
   justOne: true
 });
+
+
 
 export const Team = mongoose.model<ITeam>('Team', teamSchema);

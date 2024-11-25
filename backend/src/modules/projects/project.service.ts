@@ -9,10 +9,11 @@ export class ProjectService extends BaseService<IProject> {
   }
 
   async findByIdWithDetails(id: string): Promise<IProject> {
-    const project = await this.model
+    const project = await Project
       .findById(id)
-      .populate('ownerId', 'name email')
-      .populate('members.userId', 'name email');
+      .populate('owner', 'name email')
+      .populate('members', 'name email')
+      .populate('tasks', 'name description status assigneeId priority dueDate');
 
     if (!project) {
       throw new NotFoundException('Project not found');
@@ -48,9 +49,10 @@ export class ProjectService extends BaseService<IProject> {
 
   async findUserProjects(userId: string): Promise<IProject[]> {
     return this.model
-      .find({ $or: [{ ownerId: userId }, { members: userId }] })
-      .populate('ownerId', 'name email')
-      .populate('members', 'name email');
+      .find({ $or: [{ ownerId: userId }, { memberIds: userId }] })
+      .populate('owner', 'name email')
+      .populate('members', 'name email')
+      .populate('tasks', 'title description status priority dueDate assigneeId');
   }
 
   async addMember(projectId: string, userId: string): Promise<IProject> {
@@ -61,11 +63,11 @@ export class ProjectService extends BaseService<IProject> {
     }
 
     // Check if user is already a member
-    if (project.members.some(member => member.toString() === userId)) {
+    if (project.memberIds.some(member => member.toString() === userId)) {
       throw new BadRequestException('User is already a member of this project');
     }
 
-    project.members.push(userId as unknown as mongoose.Schema.Types.ObjectId);
+    project.memberIds.push(userId as unknown as mongoose.Schema.Types.ObjectId);
     return await project.save();
   }
 
@@ -76,7 +78,7 @@ export class ProjectService extends BaseService<IProject> {
       throw new NotFoundException('Project not found');
     }
 
-    project.members = project.members.filter(
+    project.memberIds = project.memberIds.filter(
       memberId => memberId.toString() !== userId
     );
 
@@ -88,8 +90,8 @@ export class ProjectService extends BaseService<IProject> {
     if (!project) return false;
 
     return (
-      project.ownerId.toString() === userId ||
-      project.members.some(memberId => memberId.toString() === userId)
+      project.ownerId.toString() === userId.toString() ||
+      project.memberIds.some(memberId => memberId.toString() === userId.toString())
     );
   }
 }
