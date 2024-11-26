@@ -49,15 +49,9 @@ This is the solution to my hatchdev assignment for a project management system w
 - Node.js
 - Express.js
 - MongoDB (Mongoose)
-- Redis (ioredis)# Install backend dependencies
-cd backend
-npm install
-
-# Install frontend dependencies
-cd ../frontend
-npm install
+- Redis (ioredis)
 - TypeScript
-- JWT Authentication
+- JWT
 
 ## Getting Started
 
