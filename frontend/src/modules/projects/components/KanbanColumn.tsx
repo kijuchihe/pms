@@ -5,7 +5,6 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-// import { ProjectTask } from '../types';
 import SortableTaskCard from './SortableTaskCard';
 import { Task } from '@/shared/types';
 

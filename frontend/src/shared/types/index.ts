@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   firstName: string;
-  lstName: string;
+  lastName: string;
   email: string;
   avatar?: string;
   role?: UserRole;
@@ -132,4 +132,16 @@ export interface Task {
   projectId: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  description?: string;
+  leaderId: string;
+  projects: Project[];
+  createdAt: string;
+  updatedAt: string;
+  memberIds: string[];
+  members: Partial<User>[];
 }

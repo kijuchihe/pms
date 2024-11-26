@@ -15,10 +15,10 @@ export default function Home() {
           {stats.map((item) => (
             <div
               key={item.name}
-              className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6"
+              className="overflow-hidden rounded-lg bg-white dark:bg-dark-100 px-4 py-5 shadow sm:p-6"
             >
-              <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
-              <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{item.stat}</dd>
+              <dt className="truncate text-sm font-medium text-light-100">{item.name}</dt>
+              <dd className="mt-1 text-3xl font-semibold tracking-tight text-light">{item.stat}</dd>
             </div>
           ))}
         </dl>

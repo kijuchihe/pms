@@ -28,7 +28,7 @@ export class TeamService extends BaseService<ITeam> {
         }
       })
       .populate('leader', 'name email')
-      .populate('projects', 'name description status');
+      .populate('projects', 'name description status members leaderId createdAt updatedAt startDate endDate');
 
     if (!team) {
       throw new NotFoundException('Team not found');
@@ -36,6 +36,8 @@ export class TeamService extends BaseService<ITeam> {
 
     return team;
   }
+
+
 
   async create(teamData: Partial<ITeam>, userId: string): Promise<ITeam> {
     const existingTeam = await Team.findOne({ name: teamData.name });

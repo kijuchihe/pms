@@ -138,13 +138,13 @@ export class TaskService extends BaseService<ITask> {
     return await this.update(taskId, { assigneeId: assigneeId as unknown as mongoose.Schema.Types.ObjectId });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<ITask | null> {
     const task = await this.findById(id);
     if (!task) {
       throw new NotFoundException('Task not found');
     }
 
-    await Task.findByIdAndDelete(id);
+    return await Task.findByIdAndDelete(id);
   }
 
   async updatePriority(

@@ -108,7 +108,7 @@ export class TaskController {
     const { projectId } = req.body
     const userId = req.user?.id;
 
-    console.log(projectId, taskId, userId)
+
 
     if (!projectId || !taskId || !userId) {
       throw new BadRequestException('Project ID, task ID, and user ID are required');

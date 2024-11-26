@@ -38,9 +38,9 @@ export const updateTeamSchema = z.object({
 export const addMemberSchema = z.object({
   params: z.object({
     teamId: z.string().refine(isValidObjectId, 'Invalid team ID'),
-    userId: z.string().refine(isValidObjectId, 'Invalid user ID')
   }),
   body: z.object({
+    userId: z.string().refine(isValidObjectId, 'Invalid user ID'),
     role: z.enum([TeamRole.ADMIN, TeamRole.MEMBER, TeamRole.VIEWER])
       .optional()
       .default(TeamRole.MEMBER)
@@ -60,6 +60,8 @@ export const updateMemberRoleSchema = z.object({
 export const addProjectSchema = z.object({
   params: z.object({
     teamId: z.string().refine(isValidObjectId, 'Invalid team ID'),
-    projectId: z.string().refine(isValidObjectId, 'Invalid project ID')
+  }),
+  body: z.object({
+    projectId: z.string().refine(isValidObjectId, 'Invalid project ID'),
   })
 });

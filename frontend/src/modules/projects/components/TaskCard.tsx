@@ -19,7 +19,6 @@ interface Props {
 }
 
 export default function TaskCard({ task, overlay }: Props) {
-  console.log(task)
   return (
     <div
       className={clsx(

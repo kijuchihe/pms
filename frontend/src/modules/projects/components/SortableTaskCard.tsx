@@ -2,11 +2,12 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ProjectTask } from '../types';
+// import { ProjectTask } from '../types';
 import TaskCard from './TaskCard';
+import { Task } from '@/shared/types';
 
 interface Props {
-  task: ProjectTask;
+  task: Task;
 }
 
 export default function SortableTaskCard({ task }: Props) {
@@ -17,6 +18,8 @@ export default function SortableTaskCard({ task }: Props) {
     transform,
     transition,
   } = useSortable({ id: task.id });
+
+
 
   const style = {
     transform: CSS.Transform.toString(transform),

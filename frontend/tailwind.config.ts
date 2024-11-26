@@ -16,7 +16,7 @@ export default {
         dark: {
           DEFAULT: '#121212',
           100: "#212121",
-          200: "#d1d5db",
+          200: "#333333",
           300: "#a3a8ae",
         },
         light: {

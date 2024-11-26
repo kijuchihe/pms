@@ -15,6 +15,7 @@ export class TeamController {
     res.json(teams);
   });
 
+
   findOne = catchAsync(async (req: Request, res: Response) => {
     const { teamId } = req.params;
     const team = await this.teamService.findByIdWithDetails(teamId);
@@ -64,17 +65,21 @@ export class TeamController {
     res.json(team);
   });
 
+
+
   addProject = catchAsync(async (req: Request, res: Response) => {
-    const { teamId, projectId } = req.params;
+    const { teamId } = req.params;
+    const projectId = req.body.projectId;
     const userId = req.user.id;
+    console.log(projectId, userId, teamId)
     const team = await this.teamService.addProject(teamId, projectId, userId);
-    res.json(team);
+    res.json({ message: 'Project added successfully', data: team, status: 'success' });
   });
 
   removeProject = catchAsync(async (req: Request, res: Response) => {
     const { teamId, projectId } = req.params;
     const userId = req.user.id;
     const team = await this.teamService.removeProject(teamId, projectId, userId);
-    res.json(team);
+    res.json({ message: 'Project removed successfully', data: team, status: 'success' });
   });
 }

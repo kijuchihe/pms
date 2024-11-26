@@ -46,6 +46,8 @@ export const authApi = {
 export const teamsApi = {
   getAll: (params?: PaginationParams) => api.get('/teams'),
   getById: (id: string) => api.get(`/teams/${id}`),
+  addProject: (teamId: string, projectId: string) =>
+    api.post(`/teams/${teamId}/projects`, { projectId }),
   create: (data: { name: string; description: string }) =>
     api.post('/teams', data),
   update: (id: string, data: { name?: string; description?: string }) =>
@@ -95,4 +97,5 @@ export const userApi = {
     return response.data
   },
   updateUser: (userId: string, data: Partial<any>) => api.put(`/users/${userId}`, data),
+  deleteUser: (userId: string) => api.delete(`/users/${userId}`),
 }

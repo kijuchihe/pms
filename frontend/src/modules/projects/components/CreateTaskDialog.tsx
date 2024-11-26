@@ -34,6 +34,7 @@ export default function CreateTaskDialog({ projectId, open, onClose, onTaskCreat
         ...data,
         projectId,
       });
+      console.log(response.data)
       onTaskCreated(response.data);
       reset();
       onClose();

@@ -3,12 +3,12 @@ import { TeamController } from './team.controller';
 import { authenticate } from '../../shared/middleware/auth.middleware';
 import { validateRequest } from '../../shared/middleware/validate.middleware';
 import { cache, clearCache } from '../../shared/middleware/cache.middleware';
-import { 
-  createTeamSchema, 
-  updateTeamSchema, 
+import {
+  createTeamSchema,
+  updateTeamSchema,
   addMemberSchema,
   updateMemberRoleSchema,
-  addProjectSchema 
+  addProjectSchema
 } from './team.validation';
 
 const router = Router();
@@ -32,10 +32,10 @@ router
 router
   .route('/:teamId')
   .get(
-    cache({
-      keyGenerator: (req) => `GET:team:${req.params.teamId}`,
-      ttl: 300
-    }),
+    // cache({
+    //   keyGenerator: (req) => `GET:team:${req.params.teamId}`,
+    //   ttl: 300
+    // }),
     teamController.findOne
   )
   .put(
@@ -48,13 +48,15 @@ router
     teamController.delete
   );
 
-router
-  .route('/:teamId/members/:userId')
+router.route('/:teamId/members')
   .post(
     validateRequest(addMemberSchema),
     clearCache('GET:*/teams*'),
     teamController.addMember
-  )
+  );
+
+router
+  .route('/:teamId/members/:userId')
   .put(
     validateRequest(updateMemberRoleSchema),
     clearCache('GET:*/teams*'),
@@ -65,13 +67,16 @@ router
     teamController.removeMember
   );
 
-router
-  .route('/:teamId/projects/:projectId')
+
+router.route('/:teamId/projects')
   .post(
     validateRequest(addProjectSchema),
     clearCache('GET:*/teams*'),
     teamController.addProject
-  )
+  );
+
+router
+  .route('/:teamId/projects/:projectId')
   .delete(
     clearCache('GET:*/teams*'),
     teamController.removeProject

@@ -7,6 +7,7 @@ export interface ITeam extends Document {
   description?: string;
   leaderId: mongoose.Types.ObjectId;
   projects: mongoose.Types.ObjectId[];
+  memberIds: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,7 +31,7 @@ const teamSchema = new Schema({
   projects: [{
     type: Schema.Types.ObjectId,
     ref: 'Project',
-  }]
+  }],
 }, {
   timestamps: true,
   toJSON: {

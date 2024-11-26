@@ -11,6 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useStore } from '@/shared/store/useStore';
 import { authApi } from '@/shared/utils/api';
+import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
 export function Sidebar() {
   const user = useStore(state => state.user)
@@ -133,7 +134,7 @@ export function Sidebar() {
           className="flex items-center px-4 py-2 text-sm rounded-lg hover:bg-dark-100"
           onClick={() => authApi.logout()}
         >
-          <Cog6ToothIcon className="h-5 w-5 mr-3" />
+          <ArrowRightOnRectangleIcon className="h-5 w-5 mr-3" />
           Logout
         </Link>
         <Link
