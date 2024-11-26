@@ -7,14 +7,18 @@ import { Project } from '@/shared/types';
 import ProjectCard from '@/modules/projects/components/ProjectCard';
 import { Button } from '@/shared/components/ui/button';
 import { PlusIcon } from '@heroicons/react/24/outline';
+import { useTeamDetail } from '@/modules/teams/hooks/useTeamDetail';
 
 export default function TeamProjects() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const params = useParams();
   const router = useRouter();
   const teamId = params.id as string;
+
+  const [projects, setProjects] = useState<Project[]>([]);
+  const { team } = useTeamDetail(teamId, (team) => setProjects(team.projects || []));
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     const fetchProjects = async () => {
