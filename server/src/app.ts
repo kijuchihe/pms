@@ -25,7 +25,16 @@ const app: Express = express();
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://my-pms.vercel.app', // Replace with your actual Vercel frontend domain
+    "*"
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+}));
 app.use(helmet());
 app.use(compression());
 app.use(morgan('dev'));
