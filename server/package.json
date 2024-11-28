@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/app.js",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --env-file=.env.dev src/app.ts",
-    "build": "rimraf dist && tsc && tsc-alias",
+    "build": "tsc && tsc-alias",
     "ts.check": "tsc --project tsconfig.json",
     "add-build": "git add dist",
     "clean": "rm -rf dist",
