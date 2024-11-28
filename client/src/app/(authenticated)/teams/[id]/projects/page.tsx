@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { teamsApi, projectsApi } from '@/shared/utils/api';
 import { Project } from '@/shared/types';
 import ProjectCard from '@/modules/projects/components/ProjectCard';
 import { Button } from '@/shared/components/ui/button';
@@ -15,26 +14,8 @@ export default function TeamProjects() {
   const teamId = params.id as string;
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const { team } = useTeamDetail(teamId, (team) => setProjects(team.projects || []));
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { isLoading, error } = useTeamDetail(teamId, (team) => setProjects(team.projects || []));
 
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setIsLoading(true);
-        const response = await teamsApi.getById(teamId);
-        setProjects(response.data.projects || []);
-      } catch (error: any) {
-        setError(error.response?.data?.message || 'Failed to fetch team projects');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, [teamId]);
 
   if (isLoading) {
     return <div>Loading...</div>;

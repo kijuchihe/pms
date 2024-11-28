@@ -1,12 +1,11 @@
 'use client';
 import { Team } from "@/shared/types";
 import { teamsApi } from "@/shared/utils/api";
-import { deleteCookie } from "@/shared/utils/delete-cookie";
-import { AxiosError } from "axios";
+import { handleError } from "@/shared/utils/handleError";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export const useTeamDetail = (teamId: string, onFetchedTeams?: (team: Team) => any) => {
+export const useTeamDetail = (teamId: string, onFetchedTeams?: (team: Team) => void) => {
   const [team, setTeam] = useState<Team | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,21 +19,15 @@ export const useTeamDetail = (teamId: string, onFetchedTeams?: (team: Team) => a
         const response = await teamsApi.getById(teamId);
         setTeam(response.data);
         onFetchedTeams?.(response.data);
-      } catch (error: any) {
-        setError(error.response?.data?.message || 'Failed to fetch team details');
-        if (error instanceof AxiosError) {
-          if (error.status === 401) {
-            deleteCookie('token')
-            router.replace('/auth/login?from=/teams')
-          }
-        }
+      } catch (error) {
+        handleError(error, router, setError)
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchTeamDetails();
-  }, [teamId]);
+  }, [teamId, onFetchedTeams, router]);
 
   return { team, isLoading, error };
 }

@@ -9,22 +9,17 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragStartEvent,
+  DragEndEvent,
 } from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Task, TaskStatus } from '@/shared/types';
 import KanbanColumn from './KanbanColumn';
 import TaskCard from './TaskCard';
-import { useStore } from '@/shared/store/useStore';
 import { tasksApi } from '@/shared/utils/api';
 import { AxiosError } from 'axios';
 import { deleteCookie } from '@/shared/utils/delete-cookie';
 import { useRouter } from 'next/navigation';
-// import { ProjectTask, TaskPriority, TaskStatus } from '../types';
 
 const columns = [
   { id: 'TODO', title: 'To Do' },
@@ -49,17 +44,16 @@ export default function KanbanBoard({ projectId, tasks: initialTasks }: Props) {
     })
   );
 
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
   };
 
-  const handleDragEnd = async (event: any) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (!over) return;
-
     const activeTask = tasks?.find((task) => task.id === active.id);
-    const newStatus = over.id.split('-')[0]; // column id format: "todo-column"
+    const newStatus = String(over.id).split('-')[0]; // column id format: "todo-column"
 
     if (activeTask && activeTask.status !== newStatus && newStatus) {
       try {
@@ -71,7 +65,7 @@ export default function KanbanBoard({ projectId, tasks: initialTasks }: Props) {
         setTasks((tasks) =>
           tasks?.map((task) =>
             task.id === activeTask.id
-              ? { ...task, status: newStatus }
+              ? { ...task, status: newStatus as TaskStatus }
               : task
           )
         );
@@ -115,11 +109,10 @@ export default function KanbanBoard({ projectId, tasks: initialTasks }: Props) {
       <DragOverlay>
         {activeId ? (
           <TaskCard
-            task={tasks?.find((task) => task.id === activeId)!}
+            task={tasks.find((task) => task.id === activeId)!}
             overlay
           />
         ) : null}
-
       </DragOverlay>
     </DndContext>
   );

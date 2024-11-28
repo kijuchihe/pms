@@ -12,8 +12,7 @@ import {
   Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { deleteCookie } from '@/shared/utils/delete-cookie';
-import { AxiosError } from 'axios';
+import { handleError } from '@/shared/utils/handleError';
 
 interface TeamStats {
   totalProjects: number;
@@ -59,14 +58,8 @@ export default function TeamDashboard() {
         // Set recent projects and members
         setRecentProjects(projects.slice(0, 3));
         setRecentMembers((teamData.members || []).slice(0, 5));
-      } catch (error: any) {
-        setError(error.response?.data?.message || 'Failed to fetch team details');
-        if (error instanceof AxiosError) {
-          if (error.status === 401) {
-            deleteCookie('token')
-            router.replace('/auth/login?from=/teams')
-          }
-        }
+      } catch (error) {
+        handleError(error, router, setError)
       } finally {
         setIsLoading(false);
       }

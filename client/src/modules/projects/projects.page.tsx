@@ -3,10 +3,11 @@
 import { useProjects } from '@/modules/projects/hooks/useProjects';
 import Link from 'next/link';
 import { PlusIcon } from '@heroicons/react/24/outline';
+import { Project } from '@/shared/types';
 
 
 export default function ProjectsPage() {
-  const { projects, isLoading } = useProjects();
+  const { projects } = useProjects();
 
   return (
     <div className="container mx-auto p-6">
@@ -22,7 +23,7 @@ export default function ProjectsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects?.length > 0 ? (<>{projects?.map((project: any) => (
+        {projects?.length > 0 ? (<>{projects?.map((project: Project) => (
           <Link
             key={project.id}
             href={`/projects/${project.id}`}

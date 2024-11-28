@@ -115,12 +115,6 @@ export interface UpdateTaskRequest {
   assigneeId?: string;
 }
 
-// Response Types
-export interface ProjectResponse extends Project { }
-export interface TaskResponse extends Task { }
-
-
-
 export interface Task {
   id: string;
   title: string;

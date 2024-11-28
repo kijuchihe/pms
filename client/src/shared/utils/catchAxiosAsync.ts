@@ -1,9 +1,9 @@
 import { handleError } from "./handleError"
 
-export const catchAsync = (fn: (...data: any) => Promise<any>, finallyFn: () => void) => {
+export const catchAsync = (fn: (...data: string[] | number[] | object[]) => Promise<void>, finallyFn: () => void) => {
   try {
     fn()
-  } catch (error: any) {
+  } catch (error) {
     handleError(error)
   } {
     finallyFn()

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ItemApiResponse, PaginationParams, Task, TaskPriority, TaskStatus } from '../types';
+import { PaginationParams, TaskPriority, TaskStatus, User } from '../types';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
@@ -30,12 +30,19 @@ export const authApi = {
       document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
       return response.data
     } catch (error) {
-
+      throw error
     }
   },
-  register: (registerData: { firstName: string, lastName: string, email: string, password: string }) =>
-    api.post('/auth/register', registerData),
-  logout: () => {
+  register: async (registerData: { firstName: string, lastName: string, email: string, password: string }) => {
+    try {
+      const response = await api.post('/auth/register', registerData)
+      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
+  logout: async () => {
     axios.defaults.headers['authorization'] = ``
     document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=strict';
     localStorage.removeItem('token');
@@ -44,7 +51,7 @@ export const authApi = {
 
 // Teams APIs
 export const teamsApi = {
-  getAll: (params?: PaginationParams) => api.get('/teams'),
+  getAll: (params?: PaginationParams) => api.get('/teams', { params }),
   getById: (id: string) => api.get(`/teams/${id}`),
   addProject: (teamId: string, projectId: string) =>
     api.post(`/teams/${teamId}/projects`, { projectId }),
@@ -58,7 +65,9 @@ export const teamsApi = {
 // type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 // Projects APIs
 export const projectsApi = {
-  getAll: (params?: PaginationParams) => api.get('/projects'),
+  getAll: (params?: PaginationParams) => api.get('/projects', {
+    params
+  }),
   getById: (id: string) => api.get(`/projects/${id}`),
   create: (data: { name: string; description: string, startDate?: string, endDate: string, ownerId: string }) =>
     api.post('/projects', data),
@@ -96,6 +105,6 @@ export const userApi = {
     const response = await api.get(`/users/${userId}/projects`)
     return response.data
   },
-  updateUser: (userId: string, data: Partial<any>) => api.put(`/users/${userId}`, data),
+  updateUser: (userId: string, data: Partial<User>) => api.put(`/users/${userId}`, data),
   deleteUser: (userId: string) => api.delete(`/users/${userId}`),
 }

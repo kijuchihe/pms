@@ -1,36 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { teamsApi } from '@/shared/utils/api';
 import { Button } from '@/shared/components/ui/button';
-import { Team } from '@/shared/types';
 import { useTeamDetail } from '@/modules/teams/hooks/useTeamDetail';
+import { handleError } from '@/shared/utils/handleError';
 
 export default function TeamSettings() {
-  // const [team, setTeam] = useState<Team | null>(null);
-  // const [isLoading, setIsLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
   const router = useRouter();
   const teamId = params.id as string;
   const { team, isLoading } = useTeamDetail(teamId);
 
-  // useEffect(() => {
-  //   const fetchTeam = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       const response = await teamsApi.getById(teamId);
-  //       setTeam(response.data.data);
-  //     } catch (error: any) {
-  //       setError(error.response?.data?.message || 'Failed to fetch team details');
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchTeam();
-  // }, [teamId]);
 
   const handleDeleteTeam = async () => {
     if (!window.confirm('Are you sure you want to delete this team? This action cannot be undone.')) {
@@ -40,8 +24,8 @@ export default function TeamSettings() {
     try {
       await teamsApi.delete(teamId);
       router.push('/teams');
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to delete team');
+    } catch (error) {
+      handleError(error, router, setError);
     }
   };
 

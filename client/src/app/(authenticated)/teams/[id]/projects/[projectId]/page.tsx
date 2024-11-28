@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { projectsApi, tasksApi } from '@/shared/utils/api';
+import { projectsApi } from '@/shared/utils/api';
 import { Project, Task } from '@/shared/types';
 import KanbanBoard from '@/modules/projects/components/KanbanBoard';
 import { Button } from '@/shared/components/ui/button';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import CreateTaskDialog from '@/modules/projects/components/CreateTaskDialog';
+import { handleError } from '@/shared/utils/handleError';
 
 export default function TeamProjectDetail() {
   const [project, setProject] = useState<Project | null>(null);
@@ -26,8 +27,8 @@ export default function TeamProjectDetail() {
         const response = await projectsApi.getById(projectId);
         setProject(response.data.data.project);
         setTasks(response.data.data.project.tasks || []);
-      } catch (error: any) {
-        setError(error.response?.data?.message || 'Failed to fetch project details');
+      } catch (error) {
+        handleError(error, router, setError);
       } finally {
         setIsLoading(false);
       }

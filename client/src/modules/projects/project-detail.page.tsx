@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
-// import { Project } from '@/shared/types';
-// import { useProject } from '@/modules/projects/hooks/useProjects';
 import KanbanBoard from '@/modules/projects/components/KanbanBoard';
 import CreateTaskDialog from '@/modules/projects/components/CreateTaskDialog';
 import { useProjectDetail } from '@/modules/projects/hooks/useProjectDetail';
@@ -24,7 +22,7 @@ export default function ProjectDetailPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="text-lg text-gray-500">Error: {error?.message}</div>
+        <div className="text-lg text-gray-500">Error: {error}</div>
       </div>
     );
   }
@@ -60,9 +58,7 @@ export default function ProjectDetailPage() {
         projectId={project.id}
         open={isCreateTaskOpen}
         onClose={() => setIsCreateTaskOpen(false)}
-        onTaskCreated={(newTask) => {
-          // Update project tasks
-        }}
+
       />
     </div>
   );

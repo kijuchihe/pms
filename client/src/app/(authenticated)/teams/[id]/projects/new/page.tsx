@@ -8,6 +8,7 @@ import { Textarea } from '@/shared/components/ui/textarea';
 import { Project, ProjectPriority } from '@/shared/types';
 import { projectsApi, teamsApi } from '@/shared/utils/api';
 import { useStore } from '@/shared/store/useStore';
+import { handleError } from '@/shared/utils/handleError';
 
 export default function NewTeamProjectPage() {
   const router = useRouter();
@@ -40,12 +41,11 @@ export default function NewTeamProjectPage() {
       });
       const project: Project = response.data.data.project;
 
-      const addResponse = await teamsApi.addProject(teamId, project.id);
-      console.log(addResponse);
+      await teamsApi.addProject(teamId, project.id);
 
       router.push(`/teams/${teamId}/projects`);
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to create project');
+    } catch (error) {
+      handleError(error, router, setError);
     } finally {
       setIsLoading(false);
     }

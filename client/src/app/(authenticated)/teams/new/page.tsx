@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { teamsApi } from '@/shared/utils/api';
+import { handleError } from '@/shared/utils/handleError';
 
 interface CreateTeamForm {
   name: string;
@@ -22,11 +23,10 @@ export default function CreateTeamPage() {
   const onSubmit = async (data: CreateTeamForm) => {
     try {
       setError('');
-      const res = await teamsApi.create(data);
-      console.log(res);
+      await teamsApi.create(data);
       router.push('/teams');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create team');
+    } catch (err) {
+      handleError(err, router, setError);
     }
   };
 

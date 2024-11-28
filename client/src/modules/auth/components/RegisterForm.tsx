@@ -1,12 +1,14 @@
+'use client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { authApi } from '@/shared/utils/api';
 import { useStore } from '@/shared/store/useStore';
-import { Disclosure, Transition } from '@headlessui/react';
+import { Disclosure, DisclosureButton, Transition } from '@headlessui/react';
 import { GoogleIcon, FacebookIcon, GithubIcon } from '@/shared/components/icons';
 import { Button } from '@/shared/components/ui/button';
 import { clsx } from 'clsx';
+import { handleError } from '@/shared/utils/handleError';
 
 type RegisterFormData = {
   firstName: string;
@@ -25,7 +27,8 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isLoading },
+    getValues,
+    formState: { errors },
   } = useForm<RegisterFormData>();
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -36,8 +39,8 @@ export default function RegisterForm() {
       document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
       setUser(response.data.user);
       router.push('/');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to register');
+    } catch (err) {
+      handleError(err, undefined, setError);
     } finally {
       setIsSubmitting(false);
     }
@@ -138,7 +141,7 @@ export default function RegisterForm() {
           <input
             {...register('confirmPassword', {
               required: 'Confirm password is required',
-              validate: (value) => value === register.password || 'Passwords do not match',
+              validate: (value) => value === getValues('password') || 'Passwords do not match',
             })}
             type="password"
             className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
@@ -157,7 +160,7 @@ export default function RegisterForm() {
       <Disclosure as="div" className="mt-6">
         {({ open }) => (
           <>
-            <Disclosure.Button className={clsx(
+            <DisclosureButton className={clsx(
               'flex w-full items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white',
               open ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-500 hover:bg-indigo-600'
             )}>
@@ -165,7 +168,7 @@ export default function RegisterForm() {
               <GoogleIcon />
               <FacebookIcon />
               <GithubIcon />
-            </Disclosure.Button>
+            </DisclosureButton>
             <Transition
               show={open}
               enter="transition ease-out duration-100"

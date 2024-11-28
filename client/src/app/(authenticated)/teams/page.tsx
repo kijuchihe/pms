@@ -3,34 +3,9 @@
 import Link from 'next/link';
 import { PlusIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { useTeams } from '@/modules/teams/hooks/useTeams';
-import { useRouter } from 'next/navigation';
 
 export default function TeamsPage() {
-  // const teams: any[] = []; // TODO: Add teams to store and fetch from API
-  // const { user } = useStore(state => state)
-  // const [teams, setTeams] = useState<any[]>([])
-  const router = useRouter()
-  // console.log(teams, user)
-  // useEffect(() => {
-  //   if (!user) return;
-  //   const fetchTeams = async () => {
-  //     try {
-  //       const response = await userApi.getUserTeams(user?.id as string);
-  //       setTeams(response.data.data.teams)
-  //     } catch (error: any) {
-
-  //       if (error instanceof AxiosError) {
-  //         if (error.status === 401) {
-  //           deleteCookie('token')
-  //           router.replace('/auth/login?from=/teams')
-  //         }
-  //       }
-  //     }
-  //   };
-  //   fetchTeams();
-  // }, [user])
-
-  const { teams, isLoading } = useTeams()
+  const { teams } = useTeams()
 
   return (
     <div className="py-6">
@@ -79,7 +54,7 @@ export default function TeamsPage() {
                         </h3>
                       </div>
                       <p className="mt-1 truncate text-sm text-gray-500">
-                        {team.memberCount} members
+                        {team.memberIds.length} members
                       </p>
                     </div>
                   </div>

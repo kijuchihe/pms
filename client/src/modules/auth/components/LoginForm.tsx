@@ -6,37 +6,11 @@ import { useRouter } from 'next/navigation';
 import { authApi } from '@/shared/utils/api';
 import { useStore } from '@/shared/store/useStore';
 import { FacebookIcon, GithubIcon, GoogleIcon } from '@/shared/components/icons';
-import axios from 'axios';
+import { handleError } from '@/shared/utils/handleError';
 
 interface LoginFormData {
   email: string;
   password: string;
-}
-
-const AuthFormInput = ({ register, errors, name, label, placeholder }: { register: any; errors: any; name: any; label: any; placeholder: any }) => {
-  return <div>
-    <label htmlFor="email" className="text-dark dark:text-light">
-      {label}
-    </label>
-    <input
-      {...register(name, {
-        required: 'Email is required',
-        pattern: {
-          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-          message: 'Invalid email address',
-        },
-      })}
-      type="email"
-      className="outline-none rounded-lg relative block w-full px-3 p-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-      placeholder={placeholder}
-    />
-    {errors.email && (
-      <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-    )}
-  </div>
-
-
-
 }
 
 export default function LoginForm() {
@@ -56,8 +30,8 @@ export default function LoginForm() {
       const response = await authApi.login(data.email, data.password);
       setUser(response.data.user);
       router.push('/');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to login');
+    } catch (err) {
+      handleError(err, router, setError);
     }
   };
 

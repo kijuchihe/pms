@@ -1,11 +1,10 @@
 'use client';
 import { useEffect, useState } from "react";
 import { Project } from "../../../shared/types";
-import { projectsApi, userApi } from "../../../shared/utils/api";
+import { userApi } from "../../../shared/utils/api";
 import { useStore } from "../../../shared/store/useStore";
-import { AxiosError } from "axios";
-import { deleteCookie } from "../../../shared/utils/delete-cookie";
 import { useRouter } from "next/navigation";
+import { handleError } from "@/shared/utils/handleError";
 
 export const useProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -20,18 +19,13 @@ export const useProjects = () => {
         const response = await userApi.getUserProjects(user?.id as string);
         setProjects(response.data.projects)
       } catch (error) {
-        if (error instanceof AxiosError) {
-          if (error.status === 401) {
-            deleteCookie('token')
-            router.replace('/auth/login?from=/teams')
-          }
-        }
+        handleError(error, router);
       } finally {
         setIsLoading(false)
       }
     };
     fetchProjects();
-  }, [user]);
+  }, [user, router]);
   return { projects, isLoading }
 }
 

@@ -6,13 +6,13 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { useStore } from '@/shared/store/useStore';
 import { userApi, authApi } from '@/shared/utils/api';
-import { User } from '@/shared/types';
 import {
   Cog6ToothIcon,
   UserCircleIcon,
-  BellIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
+import { AxiosError } from 'axios';
+import { handleError } from '@/shared/utils/handleError';
 
 export default function SettingsPage() {
   const { user, setUser } = useStore(state => ({ user: state.user, setUser: state.setUser }));
@@ -49,8 +49,10 @@ export default function SettingsPage() {
 
       setUser(response.data.data.user);
       setSuccessMessage('Profile updated successfully');
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to update profile');
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        setError(error.response?.data?.message || 'Failed to update profile');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -64,10 +66,10 @@ export default function SettingsPage() {
     try {
       setIsLoading(true);
       await userApi.deleteUser(user?.id as string);
-      authApi.logout();
+      await authApi.logout();
       router.push('/auth/login');
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to delete account');
+    } catch (error) {
+      handleError(error, router);
     } finally {
       setIsLoading(false);
     }

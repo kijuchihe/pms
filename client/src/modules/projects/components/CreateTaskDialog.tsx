@@ -3,14 +3,14 @@
 import { Fragment } from 'react';
 import { Dialog, Transition, TransitionChild } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
-import { Task, TaskPriority, TaskStatus } from '@/shared/types';
+import { Task, TaskPriority } from '@/shared/types';
 import { tasksApi } from '@/shared/utils/api';
 
 interface Props {
   projectId: string;
   open: boolean;
   onClose: () => void;
-  onTaskCreated: (task: Task) => void;
+  onTaskCreated?: (task: Task) => void;
 }
 
 interface FormData {
@@ -34,8 +34,8 @@ export default function CreateTaskDialog({ projectId, open, onClose, onTaskCreat
         ...data,
         projectId,
       });
-      console.log(response.data)
-      onTaskCreated(response.data);
+
+      onTaskCreated?.(response.data);
       reset();
       onClose();
     } catch (error) {

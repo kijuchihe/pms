@@ -1,5 +1,5 @@
 import Layout from '@/shared/components/layout';
-import { Sidebar } from '@/shared/components/layout/sidebar';
+
 
 export default function AuthenticatedLayout({
   children,

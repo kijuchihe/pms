@@ -58,7 +58,7 @@ export function Sidebar() {
                       className={`${active ? 'bg-gray-700' : ''
                         } block px-4 py-2 text-sm`}
                     >
-                      Your Account
+                      {user?.firstName} {user?.lastName}
                     </a>
                   )}
                 </MenuItem>

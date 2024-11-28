@@ -10,7 +10,7 @@ import { ProjectPriority } from '@/shared/types';
 
 export default function NewProjectPage() {
   const router = useRouter();
-  const { createProject, isLoading, error } = useCreateProject();
+  const { createProject, isLoading } = useCreateProject();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -129,7 +129,7 @@ export default function NewProjectPage() {
           >
             Cancel
           </Button>
-          <Button type="submit">Create Project</Button>
+          <Button type="submit" disabled={isLoading}>{isLoading ? 'Creating...' : 'Create Project'}</Button>
         </div>
       </form>
     </div>
