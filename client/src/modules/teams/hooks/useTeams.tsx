@@ -27,7 +27,7 @@ export const useTeams = () => {
       }
     };
     fetchTeams();
-  }, [user])
+  }, [user, router]);
 
   return { teams, isLoading }
 }
