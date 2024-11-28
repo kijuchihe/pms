@@ -1,5 +1,6 @@
 import Redis from 'ioredis';
 import { InternalServerException } from '../shared/exceptions';
+import 'dotenv/config'
 
 class RedisClient {
   private static instance: RedisClient;

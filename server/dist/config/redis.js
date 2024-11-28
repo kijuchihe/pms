@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.redisClient = void 0;
 const ioredis_1 = __importDefault(require("ioredis"));
 const exceptions_1 = require("../shared/exceptions");
+require("dotenv/config");
 class RedisClient {
     constructor() {
         this.client = new ioredis_1.default({
