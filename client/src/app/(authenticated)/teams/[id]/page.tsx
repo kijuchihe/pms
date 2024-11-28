@@ -66,7 +66,7 @@ export default function TeamDashboard() {
     };
 
     fetchTeamData();
-  }, [teamId]);
+  }, [teamId, router]);
 
   if (isLoading) {
     return <div>Loading...</div>;

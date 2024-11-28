@@ -35,7 +35,7 @@ export default function TeamProjectDetail() {
     };
 
     fetchProject();
-  }, [projectId]);
+  }, [projectId, router]);
 
 
 
