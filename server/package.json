@@ -10,8 +10,8 @@
     "ts.check": "tsc --project tsconfig.json",
     "add-build": "git add dist",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean",
-    "postinstall": "npm run build",
+    "prebuild": "yarn clean",
+    "postinstall": "yarn build",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down"
   },
