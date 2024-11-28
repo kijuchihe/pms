@@ -35,7 +35,7 @@ This is the solution to my hatchdev assignment for a project management system w
 
 ## Tech Stack
 
-### Frontend
+### client
 - Next.js 15 (App Router)
 - TypeScript
 - Tailwind CSS
@@ -45,7 +45,7 @@ This is the solution to my hatchdev assignment for a project management system w
 - Zustand (State Management)
 - Axios
 
-### Backend
+### server
 - Node.js
 - Express.js
 - MongoDB (Mongoose)
@@ -64,19 +64,19 @@ cd pms
 2. Install Dependencies
 
 ```bash
-# Install backend dependencies
-cd backend
+# Install server dependencies
+cd server
 npm install
 
-# Install frontend dependencies
-cd ../frontend
+# Install client dependencies
+cd ../client
 npm install
 ```
 
 3. Setup environment variables
 
 ```bash
-# Backend (.env)
+# server (.env)
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/pms
 JWT_SECRET=your-secret-key-here
@@ -89,17 +89,17 @@ REDIS_PASSWORD=
 REDIS_TTL=300
 
 
-# Frontend (.env.local)
+# client (.env.local)
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 ```
 
 4. Run the application
 
 ```bash
-# Run backend (from backend directory)
+# Run server (from server directory)
 yarn dev
 
-# Run frontend (from frontend directory)
+# Run client (from client directory)
 yarn dev
 ```
 
@@ -107,7 +107,7 @@ yarn dev
 
 ```txt
 pms/
-├── backend/
+├── server/
 │   ├── src/
 │   │   ├── modules/
 │   │   │   ├── auth/
@@ -116,7 +116,7 @@ pms/
 │   │   │   └── teams/
 │   │   └── shared/
 │   └── package.json
-└── frontend/
+└── client/
     ├── src/
     │   ├── app/
     │   ├── modules/
