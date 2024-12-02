@@ -24,7 +24,19 @@ export class UserController {
     });
   })
 
-  getUserProjects = async (req: Request, res: Response, next: NextFunction) => {
+  searchUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { query } = req.params;
+    const users = await this.userService.searchUsers(query);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        users
+      }
+    });
+  })
+
+  getUserProjects = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId } = req.params;
       const projects = await this.userService.getUserProjects(userId, req.query);
@@ -38,7 +50,7 @@ export class UserController {
     } catch (error: any) {
       next(error);
     }
-  };
+  });
 
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {

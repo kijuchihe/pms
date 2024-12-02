@@ -222,8 +222,19 @@ export class TeamService extends BaseService<ITeam> {
   }
 
   async getUserTeams(userId: string): Promise<ITeam[]> {
-    return await Team.find({ $or: [{ leaderId: userId }, { members: userId }] })
-      .populate('leader', 'name email')
-      .populate('projects', 'name description status');
+    // First, find all teamIds where the user is a member
+    const teamMemberships = await TeamMember.find({ userId });
+    const memberTeamIds = teamMemberships.map(membership => membership.teamId);
+
+    // Now find teams where user is either a leader or a member
+    return await Team.find({
+      $or: [
+        { leaderId: userId },
+        { _id: { $in: memberTeamIds } }
+      ]
+    })
+    .populate('leader', 'name email')
+    .populate('projects', 'name description status')
+    .populate('members', 'name email');
   }
 }

@@ -22,7 +22,6 @@ export default function NewProjectPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData)
 
     await createProject({
       ...formData,

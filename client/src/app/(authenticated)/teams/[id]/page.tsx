@@ -102,7 +102,7 @@ export default function TeamDashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-dark-100 p-6 rounded-lg shadow">
           <div className="flex items-center gap-4">
             <FolderIcon className="w-8 h-8 text-blue-500" />
             <div>
@@ -111,7 +111,7 @@ export default function TeamDashboard() {
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-dark-100 p-6 rounded-lg shadow">
           <div className="flex items-center gap-4">
             <UsersIcon className="w-8 h-8 text-green-500" />
             <div>
@@ -120,7 +120,7 @@ export default function TeamDashboard() {
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-dark-100 p-6 rounded-lg shadow">
           <div className="flex items-center gap-4">
             <ChartBarIcon className="w-8 h-8 text-purple-500" />
             <div>
@@ -129,7 +129,7 @@ export default function TeamDashboard() {
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div className="bg-white dark:bg-dark-100 p-6 rounded-lg shadow">
           <div className="flex items-center gap-4">
             <ChartBarIcon className="w-8 h-8 text-yellow-500" />
             <div>
@@ -155,7 +155,7 @@ export default function TeamDashboard() {
           {recentProjects.map((project) => (
             <div
               key={project.id}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow"
+              className="bg-white dark:bg-dark-100 p-6 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow"
               onClick={() => router.push(`/teams/${teamId}/projects/${project.id}`)}
             >
               <h3 className="font-semibold mb-2">{project.name}</h3>
@@ -189,9 +189,9 @@ export default function TeamDashboard() {
             Manage Members
           </Link>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-dark-100 rounded-lg shadow overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-gray-50 dark:bg-dark-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Member

@@ -28,6 +28,11 @@ usersRouter.get(
   userController.getUserProjects
 );
 
+usersRouter.get(
+  '/search',
+  userController.searchUsers
+)
+
 // Update user profile
 usersRouter.patch(
   '/:userId',

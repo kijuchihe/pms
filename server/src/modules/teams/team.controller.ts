@@ -43,8 +43,8 @@ export class TeamController {
   });
 
   addMember = catchAsync(async (req: Request, res: Response) => {
-    const { teamId, userId } = req.params;
-    const { role = TeamRole.MEMBER } = req.body;
+    const { teamId } = req.params;
+    const { role = TeamRole.MEMBER, userId } = req.body;
     const currentUserId = req.user.id;
     const team = await this.teamService.addMember(teamId, userId, currentUserId, role);
     res.json(team);
@@ -71,7 +71,6 @@ export class TeamController {
     const { teamId } = req.params;
     const projectId = req.body.projectId;
     const userId = req.user.id;
-    console.log(projectId, userId, teamId)
     const team = await this.teamService.addProject(teamId, projectId, userId);
     res.json({ message: 'Project added successfully', data: team, status: 'success' });
   });
