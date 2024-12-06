@@ -29,7 +29,7 @@ export function Sidebar() {
   const hasMoreProjects = filteredProjects.length > 5;
 
   return (
-    <div className="w-64 bg-dark text-white flex flex-col fixed top-0 left-0 h-screen">
+    <div className="w-64 bg-dark text-white flex flex-col h-full overflow-y-auto">
       {/* Account Dropdown */}
       <div className="p-4">
         <Menu as="div" className="relative z-50">
