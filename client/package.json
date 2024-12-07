@@ -24,6 +24,7 @@
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-hook-form": "^7.50.1",
+    "react-hot-toast": "^2.4.1",
     "tailwind-merge": "^2.5.4",
     "zustand": "^4.5.1",
     "zustand-persist": "^0.4.0"

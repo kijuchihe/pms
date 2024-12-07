@@ -21,6 +21,16 @@ export class UserService extends BaseService<IUser> {
     return teams;
   }
 
+  async searchUsers(query?: any) {
+    const filter: FilterQuery<IUser> = {};
+
+    if (query?.status && query.status !== 'all') {
+      filter.status = query.status;
+    }
+    const users = await this.model.find(filter);
+    return users;
+  }
+
   async getUserProjects(userId: string, query?: any) {
     const filter: FilterQuery<IUser> = { owner: userId };
 

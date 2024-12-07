@@ -24,7 +24,7 @@ export const authenticate = async (
     const token = authHeader.split(' ')[1];
     const authService = new AuthService();
     const user = await authService.verifyToken(token);
-    // console.log("Verified user", user)
+
     req.user = user;
     next();
   } catch (error) {

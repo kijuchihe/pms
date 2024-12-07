@@ -12,7 +12,7 @@ export interface ITeam extends Document {
   updatedAt: Date;
 }
 
-const teamSchema = new Schema({
+const teamSchema = new Schema<ITeam>({
   name: {
     type: String,
     required: true,

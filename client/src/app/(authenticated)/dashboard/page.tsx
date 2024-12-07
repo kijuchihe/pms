@@ -36,16 +36,16 @@ export default function Home() {
         </div>
         <ul role="list" className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((project) => (
-            <li key={project} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow">
+            <li key={project} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white dark:bg-dark-100 shadow">
               <div className="flex w-full items-center justify-between space-x-6 p-6">
                 <div className="flex-1 truncate">
                   <div className="flex items-center space-x-3">
-                    <h3 className="truncate text-sm font-medium text-gray-900">Project {project}</h3>
+                    <h3 className="truncate text-sm font-medium text-light">Project {project}</h3>
                     <span className="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                       Active
                     </span>
                   </div>
-                  <p className="mt-1 truncate text-sm text-gray-500">12 tasks</p>
+                  <p className="mt-1 truncate text-sm text-light-100">12 tasks</p>
                 </div>
               </div>
               <div>
@@ -53,7 +53,7 @@ export default function Home() {
                   <div className="flex w-0 flex-1">
                     <Link
                       href={`/projects/${project}`}
-                      className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
+                      className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-light"
                     >
                       View Details
                     </Link>

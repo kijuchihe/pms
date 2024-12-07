@@ -28,7 +28,7 @@ export const authApi = {
   login: async (email: string, password: string) => {
     try {
       const response = await api.post('/auth/login', { email, password })
-      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
+      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
       return response.data
     } catch (error) {
       throw error
@@ -37,7 +37,7 @@ export const authApi = {
   register: async (registerData: { firstName: string, lastName: string, email: string, password: string }) => {
     try {
       const response = await api.post('/auth/register', registerData)
-      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
+      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
       return response.data
     } catch (error) {
       throw error
@@ -61,6 +61,10 @@ export const teamsApi = {
   update: (id: string, data: { name?: string; description?: string }) =>
     api.put(`/teams/${id}`, data),
   delete: (id: string) => api.delete(`/teams/${id}`),
+  addMember: (teamId: string, userId: string, role: 'LEADER' | 'ADMIN' | 'MEMBER' | 'VIEWER' = 'MEMBER') =>
+    api.post(`/teams/${teamId}/members`, { userId, role }),
+  removeMember: (teamId: string, userId: string) =>
+    api.delete(`/teams/${teamId}/members/${userId}`),
 };
 
 // type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
@@ -98,7 +102,6 @@ export const tasksApi = {
 export const userApi = {
   getUser: async (userId: string) => {
     const response = await api.get(`/users/${userId}`);
-    console.log('Data', response.data)
     return response.data
   },
   getUserTeams: (userId: string) => api.get(`/users/${userId}/teams`),
@@ -108,4 +111,5 @@ export const userApi = {
   },
   updateUser: (userId: string, data: Partial<User>) => api.put(`/users/${userId}`, data),
   deleteUser: (userId: string) => api.delete(`/users/${userId}`),
+  searchUsers: (query: string) => api.get(`/users/search`, { params: { query } }),
 }

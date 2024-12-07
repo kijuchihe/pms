@@ -54,7 +54,7 @@ export class ProjectController {
     if (!project) {
       throw new BadRequestException('Project not found');
     }
-    console.log('userId', req.user?.id)
+
 
     if (!this.hasAccess(project, req.user?.id)) {
       throw new ForbiddenException('You do not have access to this project');
@@ -151,7 +151,7 @@ export class ProjectController {
 
   private hasAccess(project: any, userId: string): boolean {
     if (!project || !userId) return false;
-    console.log('project', project, 'userId', userId)
+
     return (project.ownerId.toString() === userId.toString()) || project.memberIds.some((memberId: any) => memberId.toString() === userId);
   }
 

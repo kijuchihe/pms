@@ -6,7 +6,7 @@ import {
   ConflictException,
   ForbiddenException
 } from '../../shared/exceptions';
-import mongoose from 'mongoose';
+import mongoose, { model } from 'mongoose';
 
 export class TeamService extends BaseService<ITeam> {
   constructor() {
@@ -16,14 +16,25 @@ export class TeamService extends BaseService<ITeam> {
   async findAll(): Promise<ITeam[]> {
     return Team.find()
       .populate('leader', 'name email')
-      .populate('projects', 'name description status');
-  }
-  async findByIdWithDetails(id: string): Promise<ITeam> {
-    const team = await Team.findById(id)
+      .populate('projects', 'name description status')
       .populate({
         path: 'members',
+        model: 'TeamMember',
         populate: {
           path: 'userId',
+          model: 'User',
+          select: 'name email'
+        }
+      });
+  }
+  async findByIdWithDetails(id: string): Promise<ITeam> {
+    const team = await this.model.findById(id)
+      .populate({
+        path: 'members',
+        model: 'TeamMember',
+        populate: {
+          path: 'userId',
+          model: 'User',
           select: 'name email'
         }
       })
@@ -40,7 +51,7 @@ export class TeamService extends BaseService<ITeam> {
 
 
   async create(teamData: Partial<ITeam>, userId: string): Promise<ITeam> {
-    const existingTeam = await Team.findOne({ name: teamData.name });
+    const existingTeam = await this.model.findOne({ name: teamData.name });
     if (existingTeam) {
       throw new ConflictException('Team name already exists');
     }
@@ -222,8 +233,27 @@ export class TeamService extends BaseService<ITeam> {
   }
 
   async getUserTeams(userId: string): Promise<ITeam[]> {
-    return await Team.find({ $or: [{ leaderId: userId }, { members: userId }] })
+    // First, find all teamIds where the user is a member
+    const teamMemberships = await TeamMember.find({ userId });
+    const memberTeamIds = teamMemberships.map(membership => membership.teamId);
+
+    // Now find teams where user is either a leader or a member
+    return await Team.find({
+      $or: [
+        { leaderId: userId },
+        { _id: { $in: memberTeamIds } }
+      ]
+    })
       .populate('leader', 'name email')
-      .populate('projects', 'name description status');
+      .populate('projects', 'name description status')
+      .populate({
+        path: 'members',
+        model: 'TeamMember',
+        populate: {
+          path: 'userId',
+          model: 'User',
+          select: 'name email'
+        }
+      });
   }
 }

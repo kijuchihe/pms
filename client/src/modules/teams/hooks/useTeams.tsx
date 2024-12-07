@@ -19,6 +19,7 @@ export const useTeams = () => {
       try {
         setIsLoading(true)
         const response = await userApi.getUserTeams(user?.id as string);
+        console.log(response.data.data.teams)
         setTeams(response.data.data.teams)
       } catch (error) {
         handleError(error, router);

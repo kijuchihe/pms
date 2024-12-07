@@ -69,8 +69,9 @@ export interface Project {
   endDate: string;
   createdAt: string;
   updatedAt: string;
-  owner: User;
-  members: User[];
+  owner: Partial<User>;
+  ownerId: string;
+  members: Partial<User>[];
   tasks: Task[];
 }
 export type ProjectStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED';
