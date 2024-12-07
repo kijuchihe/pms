@@ -28,7 +28,7 @@ export const authApi = {
   login: async (email: string, password: string) => {
     try {
       const response = await api.post('/auth/login', { email, password })
-      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
+      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
       return response.data
     } catch (error) {
       throw error
@@ -37,7 +37,7 @@ export const authApi = {
   register: async (registerData: { firstName: string, lastName: string, email: string, password: string }) => {
     try {
       const response = await api.post('/auth/register', registerData)
-      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=strict${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
+      document.cookie = `token=${response.data.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax${process.env.NODE_ENV === 'production' ? '; secure' : ''}`;
       return response.data
     } catch (error) {
       throw error
