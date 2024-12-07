@@ -55,7 +55,7 @@ export default function TeamsPage() {
                         </h3>
                       </div>
                       <p className="mt-1 truncate text-sm text-gray-500 dark:text-light-100">
-                        {team.members.length} members
+                        {(team.members || []).length} members
                       </p>
                     </div>
                   </div>
