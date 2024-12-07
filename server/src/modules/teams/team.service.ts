@@ -16,10 +16,17 @@ export class TeamService extends BaseService<ITeam> {
   async findAll(): Promise<ITeam[]> {
     return Team.find()
       .populate('leader', 'name email')
-      .populate('projects', 'name description status');
+      .populate('projects', 'name description status')
+      .populate({
+        path: 'members',
+        populate: {
+          path: 'userId',
+          select: 'name email'
+        }
+      });
   }
   async findByIdWithDetails(id: string): Promise<ITeam> {
-    const team = await Team.findById(id)
+    const team = await this.model.findById(id)
       .populate({
         path: 'members',
         populate: {
@@ -40,7 +47,7 @@ export class TeamService extends BaseService<ITeam> {
 
 
   async create(teamData: Partial<ITeam>, userId: string): Promise<ITeam> {
-    const existingTeam = await Team.findOne({ name: teamData.name });
+    const existingTeam = await this.model.findOne({ name: teamData.name });
     if (existingTeam) {
       throw new ConflictException('Team name already exists');
     }
@@ -233,8 +240,14 @@ export class TeamService extends BaseService<ITeam> {
         { _id: { $in: memberTeamIds } }
       ]
     })
-    .populate('leader', 'name email')
-    .populate('projects', 'name description status')
-    .populate('members', 'name email');
+      .populate('leader', 'name email')
+      .populate('projects', 'name description status')
+      .populate({
+        path: 'members',
+        populate: {
+          path: 'userId',
+          select: 'name email'
+        }
+      });
   }
 }
