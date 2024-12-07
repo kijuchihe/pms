@@ -1,12 +1,18 @@
+import { useStore } from '@/shared/store/useStore'
 import Link from 'next/link'
 
-const stats = [
-  { name: 'Total Projects', stat: '12' },
-  { name: 'Active Tasks', stat: '24' },
-  { name: 'Team Members', stat: '8' },
-]
+
 
 export default function Home() {
+
+  const projects = useStore(state => state.projects)
+  const threeProjects = projects?.slice(0, 3);
+  const stats = [
+    { name: 'Total Projects', stat: projects?.length || 0 },
+    { name: 'Active Tasks', stat: '24 (Dummy data)' },
+    { name: 'Team Members', stat: '3 (Dummy data)' },
+  ]
+
   return (
     <div className="space-y-8">
       <div>
@@ -35,12 +41,12 @@ export default function Home() {
           </Link>
         </div>
         <ul role="list" className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((project) => (
-            <li key={project} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white dark:bg-dark-100 shadow">
+          {threeProjects.map((project) => (
+            <li key={project.id} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white dark:bg-dark-100 shadow">
               <div className="flex w-full items-center justify-between space-x-6 p-6">
                 <div className="flex-1 truncate">
                   <div className="flex items-center space-x-3">
-                    <h3 className="truncate text-sm font-medium text-light">Project {project}</h3>
+                    <h3 className="truncate text-sm font-medium text-light">Project {project.name}</h3>
                     <span className="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                       Active
                     </span>

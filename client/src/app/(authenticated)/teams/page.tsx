@@ -5,8 +5,14 @@ import { PlusIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { useTeams } from '@/modules/teams/hooks/useTeams';
 
 export default function TeamsPage() {
-  const { teams } = useTeams()
-
+  const { teams, isLoading } = useTeams()
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-lg text-light-100">Loading teams...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-6">
