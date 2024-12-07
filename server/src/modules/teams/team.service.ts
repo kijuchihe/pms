@@ -6,7 +6,7 @@ import {
   ConflictException,
   ForbiddenException
 } from '../../shared/exceptions';
-import mongoose from 'mongoose';
+import mongoose, { model } from 'mongoose';
 
 export class TeamService extends BaseService<ITeam> {
   constructor() {
@@ -19,8 +19,10 @@ export class TeamService extends BaseService<ITeam> {
       .populate('projects', 'name description status')
       .populate({
         path: 'members',
+        model: 'TeamMember',
         populate: {
           path: 'userId',
+          model: 'User',
           select: 'name email'
         }
       });
@@ -29,8 +31,10 @@ export class TeamService extends BaseService<ITeam> {
     const team = await this.model.findById(id)
       .populate({
         path: 'members',
+        model: 'TeamMember',
         populate: {
           path: 'userId',
+          model: 'User',
           select: 'name email'
         }
       })
@@ -244,8 +248,10 @@ export class TeamService extends BaseService<ITeam> {
       .populate('projects', 'name description status')
       .populate({
         path: 'members',
+        model: 'TeamMember',
         populate: {
           path: 'userId',
+          model: 'User',
           select: 'name email'
         }
       });
