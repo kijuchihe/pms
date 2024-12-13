@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { catchAsync } from '../../shared/utils/catch-async';
 import { BadRequestException } from '../../shared/exceptions';
-import { IUser } from './auth.entity';
+import { IUser } from '../users/users.entity';
 
 type UserResponse = Omit<IUser, 'password'>;
 

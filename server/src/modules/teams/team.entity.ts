@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { IUser } from '../auth/auth.entity';
+import { IUser } from '../users/users.entity';
 import { populate } from 'dotenv';
 
 export interface ITeam extends Document {

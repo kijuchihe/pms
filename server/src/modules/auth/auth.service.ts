@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { User, IUser } from './auth.entity';
+import { UserModel, IUser } from '../users/users.entity';
 import { BaseService } from '../../shared/utils/base.service';
 import {
   UnauthorizedException,
@@ -11,16 +11,16 @@ type UserResponse = Omit<IUser, 'password'>;
 
 export class AuthService extends BaseService<IUser> {
   constructor() {
-    super(User);
+    super(UserModel);
   }
 
   async register(userData: Partial<IUser>): Promise<{ user: UserResponse; token: string }> {
-    const existingUser = await User.findOne({ email: userData.email });
+    const existingUser = await UserModel.findOne({ email: userData.email });
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
 
-    const user = await User.create(userData);
+    const user = await UserModel.create(userData);
     const token = this.generateToken(user);
 
     // Convert to plain object and exclude password
@@ -30,7 +30,7 @@ export class AuthService extends BaseService<IUser> {
   }
 
   async login(email: string, password: string): Promise<{ user: UserResponse; token: string }> {
-    const user = await User.findOne({ email }).select('+password');
+    const user = await UserModel.findOne({ email }).select('+password');
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -63,7 +63,7 @@ export class AuthService extends BaseService<IUser> {
   async verifyToken(token: string): Promise<UserResponse> {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-      const user = await User.findById(decoded.id).select('-password');
+      const user = await UserModel.findById(decoded.id).select('-password');
 
       if (!user) {
         throw new UnauthorizedException('Invalid token');

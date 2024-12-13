@@ -26,7 +26,7 @@ export default function TeamSettings() {
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleSearch = async (query: string) => {
+  const handleUserSearch = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
@@ -191,7 +191,7 @@ export default function TeamSettings() {
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
-                  handleSearch(e.target.value);
+                  handleUserSearch(e.target.value);
                 }}
               />
             </div>
