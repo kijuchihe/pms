@@ -24,7 +24,17 @@ class UserController {
                 }
             });
         }));
-        this.getUserProjects = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+        this.searchUsers = (0, catch_async_1.catchAsync)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const { query } = req.params;
+            const users = yield this.userService.searchUsers(query);
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    users
+                }
+            });
+        }));
+        this.getUserProjects = (0, catch_async_1.catchAsync)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { userId } = req.params;
                 const projects = yield this.userService.getUserProjects(userId, req.query);
@@ -39,7 +49,7 @@ class UserController {
             catch (error) {
                 next(error);
             }
-        });
+        }));
         this.updateUser = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { userId } = req.params;

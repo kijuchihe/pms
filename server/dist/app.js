@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -8,6 +17,8 @@ const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const helmet_1 = __importDefault(require("helmet"));
 const compression_1 = __importDefault(require("compression"));
+const node_cron_1 = __importDefault(require("node-cron"));
+const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = require("dotenv");
 const database_1 = require("./config/database");
 const error_middleware_1 = require("./shared/middleware/error.middleware");
@@ -24,7 +35,16 @@ const app = (0, express_1.default)();
 // Connect to MongoDB
 (0, database_1.connectDB)();
 // Middleware
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: [
+        'http://localhost:3000',
+        'https://my-pms.vercel.app', // Replace with your actual Vercel frontend domain
+        "*"
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+}));
 app.use((0, helmet_1.default)());
 app.use((0, compression_1.default)());
 app.use((0, morgan_1.default)('dev'));
@@ -37,6 +57,19 @@ app.use('/api/projects', project_router_1.default);
 app.use('/api/teams', team_router_1.default);
 app.use('/api/tasks', task_router_1.default);
 app.use('/api/users', users_router_1.default);
+app.get('/', (req, res) => {
+    res.send('Hello, World!');
+});
+const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
+node_cron_1.default.schedule('*/3 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const response = yield axios_1.default.get(`${SERVER_URL}/`);
+        console.log(`Server health check at ${new Date().toISOString()}: ${response.status}`);
+    }
+    catch (error) {
+        console.error('Server health check failed:', error);
+    }
+}));
 // Error handling - must be after routes
 app.use(error_middleware_1.errorHandler);
 // Start server

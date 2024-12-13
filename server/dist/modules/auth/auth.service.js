@@ -25,20 +25,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const auth_entity_1 = require("./auth.entity");
+const users_entity_1 = require("../users/users.entity");
 const base_service_1 = require("../../shared/utils/base.service");
 const exceptions_1 = require("../../shared/exceptions");
 class AuthService extends base_service_1.BaseService {
     constructor() {
-        super(auth_entity_1.User);
+        super(users_entity_1.UserModel);
     }
     register(userData) {
         return __awaiter(this, void 0, void 0, function* () {
-            const existingUser = yield auth_entity_1.User.findOne({ email: userData.email });
+            const existingUser = yield users_entity_1.UserModel.findOne({ email: userData.email });
             if (existingUser) {
                 throw new exceptions_1.ConflictException('Email already exists');
             }
-            const user = yield auth_entity_1.User.create(userData);
+            const user = yield users_entity_1.UserModel.create(userData);
             const token = this.generateToken(user);
             // Convert to plain object and exclude password
             const _a = user.toObject(), { password } = _a, userResponse = __rest(_a, ["password"]);
@@ -47,7 +47,7 @@ class AuthService extends base_service_1.BaseService {
     }
     login(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield auth_entity_1.User.findOne({ email }).select('+password');
+            const user = yield users_entity_1.UserModel.findOne({ email }).select('+password');
             if (!user) {
                 throw new exceptions_1.UnauthorizedException('Invalid credentials');
             }
@@ -73,7 +73,7 @@ class AuthService extends base_service_1.BaseService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-                const user = yield auth_entity_1.User.findById(decoded.id).select('-password');
+                const user = yield users_entity_1.UserModel.findById(decoded.id).select('-password');
                 if (!user) {
                     throw new exceptions_1.UnauthorizedException('Invalid token');
                 }

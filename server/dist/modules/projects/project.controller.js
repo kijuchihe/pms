@@ -41,14 +41,13 @@ class ProjectController {
             });
         }));
         this.findOne = (0, catch_async_1.catchAsync)((req, res) => __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a;
             const { projectId } = req.params;
             const project = yield this.projectService.findByIdWithDetails(projectId);
             if (!project) {
                 throw new exceptions_1.BadRequestException('Project not found');
             }
-            console.log('userId', (_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
-            if (!this.hasAccess(project, (_b = req.user) === null || _b === void 0 ? void 0 : _b.id)) {
+            if (!this.hasAccess(project, (_a = req.user) === null || _a === void 0 ? void 0 : _a.id)) {
                 throw new exceptions_1.ForbiddenException('You do not have access to this project');
             }
             res.json({
@@ -126,7 +125,6 @@ class ProjectController {
     hasAccess(project, userId) {
         if (!project || !userId)
             return false;
-        console.log('project', project, 'userId', userId);
         return (project.ownerId.toString() === userId.toString()) || project.memberIds.some((memberId) => memberId.toString() === userId);
     }
     isOwner(project, userId) {

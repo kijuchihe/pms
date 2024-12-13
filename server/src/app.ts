@@ -3,6 +3,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import compression from 'compression';
+import cron from 'node-cron';
+import axios from 'axios';
 import { config } from 'dotenv';
 
 import { connectDB } from './config/database';
@@ -48,12 +50,26 @@ app.use('/api/projects', projectRouter);
 app.use('/api/teams', teamRouter);
 app.use('/api/tasks', taskRouter);
 app.use('/api/users', usersRouter);
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
+
 
 // Error handling - must be after routes
 app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;
+const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
+cron.schedule('*/3 * * * *', async () => {
+  try {
+    const response = await axios.get(`${SERVER_URL}/`);
+    console.log(`Server health check at ${new Date().toISOString()}: ${response.status}`);
+  } catch (error) {
+    console.error('Server health check failed:', error);
+  }
+});
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -21,7 +21,6 @@ const authenticate = (req, _res, next) => __awaiter(void 0, void 0, void 0, func
         const token = authHeader.split(' ')[1];
         const authService = new auth_service_1.AuthService();
         const user = yield authService.verifyToken(token);
-        // console.log("Verified user", user)
         req.user = user;
         next();
     }

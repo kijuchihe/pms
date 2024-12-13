@@ -22,16 +22,27 @@ class TeamService extends base_service_1.BaseService {
         return __awaiter(this, void 0, void 0, function* () {
             return team_entity_1.Team.find()
                 .populate('leader', 'name email')
-                .populate('projects', 'name description status');
+                .populate('projects', 'name description status')
+                .populate({
+                path: 'members',
+                model: 'TeamMember',
+                populate: {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'name email'
+                }
+            });
         });
     }
     findByIdWithDetails(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const team = yield team_entity_1.Team.findById(id)
+            const team = yield this.model.findById(id)
                 .populate({
                 path: 'members',
+                model: 'TeamMember',
                 populate: {
                     path: 'userId',
+                    model: 'User',
                     select: 'name email'
                 }
             })
@@ -45,7 +56,7 @@ class TeamService extends base_service_1.BaseService {
     }
     create(teamData, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const existingTeam = yield team_entity_1.Team.findOne({ name: teamData.name });
+            const existingTeam = yield this.model.findOne({ name: teamData.name });
             if (existingTeam) {
                 throw new exceptions_1.ConflictException('Team name already exists');
             }
@@ -192,9 +203,27 @@ class TeamService extends base_service_1.BaseService {
     }
     getUserTeams(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield team_entity_1.Team.find({ $or: [{ leaderId: userId }, { members: userId }] })
+            // First, find all teamIds where the user is a member
+            const teamMemberships = yield team_member_entity_1.TeamMember.find({ userId });
+            const memberTeamIds = teamMemberships.map(membership => membership.teamId);
+            // Now find teams where user is either a leader or a member
+            return yield team_entity_1.Team.find({
+                $or: [
+                    { leaderId: userId },
+                    { _id: { $in: memberTeamIds } }
+                ]
+            })
                 .populate('leader', 'name email')
-                .populate('projects', 'name description status');
+                .populate('projects', 'name description status')
+                .populate({
+                path: 'members',
+                model: 'TeamMember',
+                populate: {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'name email'
+                }
+            });
         });
     }
 }

@@ -42,8 +42,8 @@ class TeamController {
             res.status(204).end();
         }));
         this.addMember = (0, catch_async_1.catchAsync)((req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { teamId, userId } = req.params;
-            const { role = team_member_entity_1.TeamRole.MEMBER } = req.body;
+            const { teamId } = req.params;
+            const { role = team_member_entity_1.TeamRole.MEMBER, userId } = req.body;
             const currentUserId = req.user.id;
             const team = yield this.teamService.addMember(teamId, userId, currentUserId, role);
             res.json(team);
@@ -65,7 +65,6 @@ class TeamController {
             const { teamId } = req.params;
             const projectId = req.body.projectId;
             const userId = req.user.id;
-            console.log(projectId, userId, teamId);
             const team = yield this.teamService.addProject(teamId, projectId, userId);
             res.json({ message: 'Project added successfully', data: team, status: 'success' });
         }));

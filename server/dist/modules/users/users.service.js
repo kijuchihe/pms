@@ -14,10 +14,10 @@ exports.UserService = void 0;
 const team_service_1 = require("../teams/team.service");
 const project_service_1 = require("../projects/project.service");
 const base_service_1 = require("../../shared/utils/base.service");
-const auth_entity_1 = require("../auth/auth.entity");
+const users_entity_1 = require("./users.entity");
 class UserService extends base_service_1.BaseService {
     constructor() {
-        super(auth_entity_1.User);
+        super(users_entity_1.UserModel);
         this.teamService = new team_service_1.TeamService();
         this.projectService = new project_service_1.ProjectService();
     }
@@ -27,12 +27,24 @@ class UserService extends base_service_1.BaseService {
             return teams;
         });
     }
-    getUserProjects(userId, query) {
+    searchUsers(query) {
         return __awaiter(this, void 0, void 0, function* () {
-            const filter = { owner: userId };
+            const filter = {
+                $or: [
+                    { firstName: { $regex: query, $options: 'i' } },
+                    { lastName: { $regex: query, $options: 'i' } },
+                    { email: { $regex: query, $options: 'i' } }
+                ]
+            };
             if ((query === null || query === void 0 ? void 0 : query.status) && query.status !== 'all') {
                 filter.status = query.status;
             }
+            const users = yield this.model.find(filter);
+            return users;
+        });
+    }
+    getUserProjects(userId, query) {
+        return __awaiter(this, void 0, void 0, function* () {
             const projects = yield this.projectService.findUserProjects(userId);
             return projects;
         });
