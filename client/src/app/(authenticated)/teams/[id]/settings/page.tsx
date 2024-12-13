@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { teamsApi } from '@/shared/utils/api';
 import { Button } from '@/shared/components/ui/button';
@@ -29,6 +29,13 @@ export default function TeamSettings() {
   const [teamName, setTeamName] = useState(team?.name || '');
   const [teamDescription, setTeamDescription] = useState(team?.description || '');
   const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    if (team) {
+      setTeamName(team.name);
+      setTeamDescription(team.description || '');
+    }
+  }, [team]);
 
   const handleUpdateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
