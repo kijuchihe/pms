@@ -26,6 +26,27 @@ export default function TeamSettings() {
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  const [teamName, setTeamName] = useState(team?.name || '');
+  const [teamDescription, setTeamDescription] = useState(team?.description || '');
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleUpdateTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    try {
+      await teamsApi.update(teamId, {
+        name: teamName !== team?.name ? teamName : undefined,
+        description: teamDescription !== team?.description ? teamDescription : undefined
+      });
+      toast.success('Team updated successfully');
+    } catch (error) {
+      console.error('Error updating team:', error);
+      toast.error('Failed to update team');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const handleUserSearch = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -110,8 +131,8 @@ export default function TeamSettings() {
               <input
                 type="text"
                 className="w-full p-2 bg-dark-200 rounded"
-                value={team.name}
-                onChange={() => { }}
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
                 placeholder="Team Name"
               />
             </div>
@@ -119,13 +140,13 @@ export default function TeamSettings() {
               <label className="block text-sm font-medium mb-1">Description</label>
               <textarea
                 className="w-full p-2 bg-dark-200 rounded"
-                value={team.description}
-                onChange={() => { }}
+                value={teamDescription}
+                onChange={(e) => setTeamDescription(e.target.value)}
                 placeholder="Team Description"
                 rows={3}
               />
             </div>
-            <Button>Save Changes</Button>
+            <Button onClick={handleUpdateTeam} disabled={isUpdating}>{isUpdating ? 'Updating...' : 'Save Changes'}</Button>
           </div>
         </div>
       </section>
