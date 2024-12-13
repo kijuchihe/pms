@@ -31,7 +31,7 @@ usersRouter.get(
 )
 
 // Update user profile
-usersRouter.patch(
+usersRouter.put(
   '/:userId',
   validateRequest(updateUserSchema),
   // authorize(['ADMIN', 'OWNER']),

@@ -25,7 +25,7 @@ export class UserController {
   })
 
   searchUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { query } = req.params;
+    const { query } = req.params as { query: string };
     const users = await this.userService.searchUsers(query);
 
     res.status(200).json({

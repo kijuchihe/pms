@@ -21,18 +21,15 @@ export class UserService extends BaseService<IUser> {
     return teams;
   }
 
-  async searchUsers(query?: any) {
+  async searchUsers(query: string = '') {
     const filter: FilterQuery<IUser> = {
       $or: [
-        { firstName: { $regex: query, $options: 'i' } },
-        { lastName: { $regex: query, $options: 'i' } },
-        { email: { $regex: query, $options: 'i' } }
+        { firstName: { $regex: new RegExp(query, 'i') } },
+        { lastName: { $regex: new RegExp(query, 'i') } },
+        { email: { $regex: new RegExp(query, 'i') } }
       ]
     };
 
-    if (query?.status && query.status !== 'all') {
-      filter.status = query.status;
-    }
     const users = await this.model.find(filter);
     return users;
   }
