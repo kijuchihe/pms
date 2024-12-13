@@ -60,6 +60,10 @@ app.use('/api/users', users_router_1.default);
 app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
+// Error handling - must be after routes
+app.use(error_middleware_1.errorHandler);
+// Start server
+const PORT = process.env.PORT || 5000;
 const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
 node_cron_1.default.schedule('*/3 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -70,10 +74,6 @@ node_cron_1.default.schedule('*/3 * * * *', () => __awaiter(void 0, void 0, void
         console.error('Server health check failed:', error);
     }
 }));
-// Error handling - must be after routes
-app.use(error_middleware_1.errorHandler);
-// Start server
-const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
